@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# Directorio base de usuario
+M_PUSER=~
+
+# IDE a usar por defecto
+M_IDE="/usr/bin/code"
+
+# Guardar directorio actual según donde se ejecute el m-require
+M_ACTUAL=$PWD
+
+# Directorio del programa
+M_PATH=$M_PUSER/dotfiles
+M_PATH_LIB=$M_PATH/lib;
+
+# Referencia al archivo de carga
+M_FSOURCE="$M_PATH/m-require";
+
+# Directorio de apps especiales
+M_APPS=$M_PUSER/apps
+
+
+# Instala todas las funciones / alias del directorio lib y lib-custom
+
+MP_HELP="$M_PATH/help";
+MP_HELP_CMDS="$MP_HELP/.commands"
+MP_HELP_LIST="$MP_HELP/.commands/.list";
+
+rm -r $MP_HELP_CMDS &> /dev/null
+mkdir -p $MP_HELP_CMDS &> /dev/null
+echo "" > $MP_HELP_LIST
+
+function m--load-lib()
+{
+    PATH_ORIGIN=$1
+    FILE_CML_LIST=$2
+
+    for file_source in $(find "$PATH_ORIGIN" -type f); do 
+        # Import script
+        source $file_source
+
+        # Read all methods on the file
+        grep -n 'function ' $file_source \
+        | while read -r actual_line ; do
+            line_num_pos=$(echo $actual_line | awk -F ":" '{ print $1 }')
+
+            METHOD_NAME=$(tail +$line_num_pos $file_source \
+                | head -1 \
+                | awk -F "function " '{ print $2 }' \
+                | awk -F "\(\)" '{ print $1 }'
+            )
+            echo "$METHOD_NAME" >> $FILE_CML_LIST
+        done
+    done
+}
+
+# Detiene el proceso que esté usando el puerto tcp definido
+ # m-kill-port 80:
+function m-kill-port () {
+    fuser -k -n tcp $@
+}
+
+function m-grep-line()
+{
+    grep -n $@ | awk -F ":" '{ print $1 }' | head -1
+}
+
+function m--load-generater-wiki()
+{
+    for METHOD_NAME in $(grep -E ".+" $MP_HELP_LIST); do
+        module_name=$(echo $METHOD_NAME \
+            | awk -F "-" '{ print $2 }'
+        )
+
+        FILE_MODULE_WIKI="$MP_HELP/$module_name"
+        FILE_METHOD_WIKI="$MP_HELP_CMDS/$METHOD_NAME"
+        echo -e "$METHOD_NAME:\nNo hay documentación disponible aún." > "$FILE_METHOD_WIKI"
+
+        if test -f "$FILE_MODULE_WIKI"; then
+            LINE_INI=$(m-grep-line $METHOD_NAME $FILE_MODULE_WIKI)
+        fi
+
+        if [[ $LINE_INI ]]; then
+            LINE_END=$(tail +$LINE_INI $FILE_MODULE_WIKI | m-grep-line '\.$')
+            LINE_END=$(( LINE_END + LINE_INI - 2))
+            
+            m-text-blines $LINE_INI $LINE_END $FILE_MODULE_WIKI > $FILE_METHOD_WIKI
+        fi
+    done
+}
+
+# Lista los comandos para seleccionar la documentacion
+function m-help()
+{
+    cd $MP_HELP_CMDS
+    METHOD_NAME=$(ls -1 \
+        | fzf --color="light" --preview="head {}"
+    )
+    cd $M_ACTUAL
+}
+
+# Start
+m--load-lib $M_PATH_LIB $MP_HELP_LIST
+m--load-generater-wiki

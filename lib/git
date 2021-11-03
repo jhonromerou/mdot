@@ -1,0 +1,85 @@
+# ----
+ # Funcionalidades de git
+# ----
+
+
+# Listar las ramas y devolver nombre de la seleccionada.
+# Solo muestra las activas
+function m-git-branches()
+{
+    branch=$(git branch --no-merged \
+        | fzf --header="Seleccione la rama a la que quiere cambiar: " \
+        | awk '{ print $1 }'
+    )
+    echo $branch
+}
+
+# Cambiar de rama desde seleccion o directamente
+function m-git-checkout()
+{
+    if [[ $1 ]]; then
+        branch=$@
+    else
+        branch=$(git branch --no-merged \
+        | fzf --header="Seleccione la rama a la que quiere cambiar: " \
+        | awk '{ print $1 }')
+    fi
+
+    if [[ $branch ]]; then
+        git checkout "$branch"
+    fi
+}
+
+function m-git-merge()
+{
+    BRANCHE_USED=$(git branch --show-current)
+
+    if [[ $1 ]]; then
+        branch=$1
+    else
+        branch=$(git branch \
+        | fzf --header="Seleccione la rama que quiere fusionar: " \
+        | awk '{ print $1 }')
+    fi
+
+    if [[ $branch ]]; then
+        echo "**** Sincronizando rama: $branch"
+        git checkout $branch &> /dev/null
+        git pull
+        echo "**** Fusionando en rama: $BRANCHE_USED"
+        git checkout $BRANCHE_USED  &> /dev/null
+        git merge $branch
+    fi
+}
+
+# Ver listado de archivos con cambios con base al commit definido
+function m-git-diffFiles()
+{
+    branch=$(git status | head -1 | awk '{ print $NF }')
+    user=$(git config user.email)
+    if [[ $1 ]]; then
+        hash=$1
+    else
+        hash=$(git log --oneline $branch \
+        | fzf --header="Seleccione el commit de origen: " \
+        | awk '{ print $1}')
+    fi
+    git diff $hash^.. --stat
+}
+
+function m-git-config()
+{
+    UNABLED="branch\|remote\|core"
+    VAR_VALUE=$(git config --list \
+        | grep -v $UNABLED \
+        | fzf --header="Seleccione la variable a modificar"
+    )
+    if [[ $VAR_VALUE ]]; then
+        VAR_NAME=$(echo $VAR_VALUE | awk -F "=" '{ print $1 }')
+        read -e -p "Digite el nuevo valor para $VAR_NAME: " NEW_VALUE
+    fi
+
+    if [[ $NEW_VALUE ]]; then
+        git config $VAR_NAME "$NEW_VALUE"
+    fi
+}

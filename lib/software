@@ -1,0 +1,10 @@
+# ------------
+ # Software / Programs
+# ------------
+
+# Abre el programa que administra base de datos de mongo
+function m-mongo-admin()
+{
+	cd $M_APPS;
+	./nosqlbooster4mongo-6.2.17.AppImage </dev/null &>/dev/null &
+}

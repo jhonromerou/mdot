@@ -1,0 +1,220 @@
+.
+├── a.txt
+├── dotfiles
+│   ├── .git
+│   │   ├── branches
+│   │   ├── config
+│   │   ├── description
+│   │   ├── HEAD
+│   │   ├── hooks
+│   │   │   ├── applypatch-msg.sample
+│   │   │   ├── commit-msg.sample
+│   │   │   ├── fsmonitor-watchman.sample
+│   │   │   ├── post-update.sample
+│   │   │   ├── pre-applypatch.sample
+│   │   │   ├── pre-commit.sample
+│   │   │   ├── pre-merge-commit.sample
+│   │   │   ├── prepare-commit-msg.sample
+│   │   │   ├── pre-push.sample
+│   │   │   ├── pre-rebase.sample
+│   │   │   ├── pre-receive.sample
+│   │   │   └── update.sample
+│   │   ├── index
+│   │   ├── info
+│   │   │   └── exclude
+│   │   ├── logs
+│   │   │   ├── HEAD
+│   │   │   └── refs
+│   │   │       ├── heads
+│   │   │       │   └── master
+│   │   │       └── remotes
+│   │   │           └── origin
+│   │   │               └── HEAD
+│   │   ├── objects
+│   │   │   ├── 02
+│   │   │   │   └── cbe415c0d8b18de0ef14e5868c39a131ae7fd3
+│   │   │   ├── 05
+│   │   │   │   └── 9c2000571287832c848343381dedbf02829778
+│   │   │   ├── 0a
+│   │   │   │   └── c5bf0e491d1361096331e583bf985763689111
+│   │   │   ├── 16
+│   │   │   │   └── e30064453cc481698a640c1921e52beb368c4e
+│   │   │   ├── 17
+│   │   │   │   └── 292b41424fddb3e58d7255be718eac0398fdd2
+│   │   │   ├── 1e
+│   │   │   │   └── abe110a4fa08cc653d6dc06d84b9677adb0dda
+│   │   │   ├── 22
+│   │   │   │   └── af8dfd033c5828bd1443686a0862a864f1222f
+│   │   │   ├── 23
+│   │   │   │   └── 90b74a0cb756c8e3a876fdd80c4cf6b958293b
+│   │   │   ├── 26
+│   │   │   │   └── f52d7876a34935e444a7c0aea1e5cf7b118115
+│   │   │   ├── 29
+│   │   │   │   ├── 04cd31bcaf57e5dd10441d62b1d658142a85c0
+│   │   │   │   └── 83e7179d27ac522380076b771418d27648393f
+│   │   │   ├── 2a
+│   │   │   │   └── fa3528e63a6d395670207f954896106aa30f20
+│   │   │   ├── 2b
+│   │   │   │   └── 185512731ba09bbf06d479d3f542f56a4f29fe
+│   │   │   ├── 30
+│   │   │   │   └── d88b40574fa0f1a794d13db3916f0935fded8f
+│   │   │   ├── 34
+│   │   │   │   ├── 999ed35d38db8f9f400c478327a36b48c4b990
+│   │   │   │   └── b1f8ab8637718aae0b3e4e95a6c6c8ad8e9995
+│   │   │   ├── 35
+│   │   │   │   └── 99e51996101ed5b2026adb6cb6dc02f5554688
+│   │   │   ├── 38
+│   │   │   │   └── 30fda9ac7b275a0d8253db0231b2656f7de370
+│   │   │   ├── 3a
+│   │   │   │   └── 8cf61c0906eefc5f9f72634f7b3568db7d0335
+│   │   │   ├── 47
+│   │   │   │   └── 77ad9154892694f1f44fa68d80605e72f1a83b
+│   │   │   ├── 4c
+│   │   │   │   └── 1f6cd17af9b7510f45590e3d796f9ce30d3934
+│   │   │   ├── 51
+│   │   │   │   └── b1678be0ba475b65a6b0cc0e61bc1af20dc10b
+│   │   │   ├── 56
+│   │   │   │   └── 9620c8ea02d11948601f5a5dbd4c6064c37bba
+│   │   │   ├── 6d
+│   │   │   │   └── 446e7f3ea5448a5b8b2debb8f687027ec34d26
+│   │   │   ├── 6f
+│   │   │   │   └── 5b1dc35c9f725225cd9b0e8aa71a0158534c1c
+│   │   │   ├── 72
+│   │   │   │   ├── 190f804b7a4732dd6944533c2eb998c09bbadc
+│   │   │   │   └── 79a46a676d69987e8ee757a3739418f077660b
+│   │   │   ├── 78
+│   │   │   │   └── 6366945d1027d12a61329bc50e371f71277459
+│   │   │   ├── 7b
+│   │   │   │   └── e6e2fc079e1c545e05941545a2be7184fd9d44
+│   │   │   ├── 7d
+│   │   │   │   └── e25cc879332dc2a94a6c7a4b6dfcd98ef1e004
+│   │   │   ├── 83
+│   │   │   │   └── c630f117b22d6e28b751b4118da814b7212fd3
+│   │   │   ├── 90
+│   │   │   │   └── bcc9a02825b227a20f900842626a97e93997d6
+│   │   │   ├── 91
+│   │   │   │   ├── 27ca74cffb99560f100d1c46edeacf01ec2591
+│   │   │   │   └── 7fcfcd2942873ee912c2dbcc49a83dc49b308e
+│   │   │   ├── 95
+│   │   │   │   └── d42659f8c67d84b317e73e8aabcf80ef8e73ef
+│   │   │   ├── 97
+│   │   │   │   └── 3f317e343337ebc72dc462414e071f325c3601
+│   │   │   ├── 99
+│   │   │   │   └── 01c52bc766530ef7bf94d51761cf02f21234ed
+│   │   │   ├── 9b
+│   │   │   │   └── fb0db4c492462fd6eddac853a2b6bfa087b85a
+│   │   │   ├── a2
+│   │   │   │   └── c4ffc5468b07ba83fa7b5d80b36af00c2c1728
+│   │   │   ├── a3
+│   │   │   │   └── 4df96dc30f5e579ab18a758eff767923aca595
+│   │   │   ├── a5
+│   │   │   │   └── d16fd3284388ce723ead8ce4d7e5a31afd9867
+│   │   │   ├── a7
+│   │   │   │   └── b5815ef310ee823b434c1c9d5a2b61b36e236f
+│   │   │   ├── ab
+│   │   │   │   └── 9bdb1c4969fb0a83950a4c0e70e872e24397ad
+│   │   │   ├── b0
+│   │   │   │   └── 68dd98f39713d555b22bb91a06b77205784af7
+│   │   │   ├── b4
+│   │   │   │   └── 7b3612d61a2abc60a71c11d1615fca6a49e9be
+│   │   │   ├── b7
+│   │   │   │   └── 620d5090dac4cf7774c223918658b5a4c7900d
+│   │   │   ├── b9
+│   │   │   │   └── 1c0f73715d6f024e47e26f7b49b32a9cefe003
+│   │   │   ├── bb
+│   │   │   │   ├── 1876fe24c389382dc9964c50d7c29bc1b2baed
+│   │   │   │   └── f09381d2e49eb0e528f4975356570ece625a6f
+│   │   │   ├── bd
+│   │   │   │   └── a42ad7f4c17cf8415547c53f3b7f4c8b2374ce
+│   │   │   ├── be
+│   │   │   │   └── 012849e035558e38278660fd24289757b325ac
+│   │   │   ├── c1
+│   │   │   │   └── c7a815136f226f8ded2bf869007631182d9bf7
+│   │   │   ├── c6
+│   │   │   │   └── 5a6568ae81e91610395548fc09c6b490106213
+│   │   │   ├── c7
+│   │   │   │   └── e60f4303ed94992c92b264c4e1967f16c55195
+│   │   │   ├── c9
+│   │   │   │   ├── 794a6afda010ac1dc592577c6d9123b3b23756
+│   │   │   │   └── c975673213ee9c6173b6551f02b791cd023075
+│   │   │   ├── ca
+│   │   │   │   └── 0b666851161f162ccd51b4bbb3b3f5becbf22e
+│   │   │   ├── cd
+│   │   │   │   └── ed4dfe9b308361ce4d4cc60efca6bfe83b0786
+│   │   │   ├── d3
+│   │   │   │   └── 7c00208f7c00e5c494cc934f0ecd9293de2705
+│   │   │   ├── d5
+│   │   │   │   └── 5e355d3693167591f249416430bfb3d384fd7c
+│   │   │   ├── db
+│   │   │   │   └── 85a9130400913ba15464992e33bc8e9c3f7f14
+│   │   │   ├── de
+│   │   │   │   └── 4cdd3833897b378e23faf8d9adcc17efbf26bb
+│   │   │   ├── e3
+│   │   │   │   └── ab8d70cf484d1eb5901fec7df5133937bd7f3e
+│   │   │   ├── e7
+│   │   │   │   └── 58fca4b4218771758dd22c586646ddad62f25a
+│   │   │   ├── f3
+│   │   │   │   └── b97c8792e30fc13b52bce0f1208a29aa34beb3
+│   │   │   ├── f7
+│   │   │   │   └── 2307374eedc337ed86251bfc6581c58cdb8967
+│   │   │   ├── f8
+│   │   │   │   ├── 9fb1de051e6465bd3317857716784c0b75d370
+│   │   │   │   └── ec6b094c5b46bac11d1e79af38438f3e1904c2
+│   │   │   ├── info
+│   │   │   └── pack
+│   │   ├── packed-refs
+│   │   └── refs
+│   │       ├── heads
+│   │       │   └── master
+│   │       ├── remotes
+│   │       │   └── origin
+│   │       │       └── HEAD
+│   │       └── tags
+│   ├── .gitignore
+│   ├── help
+│   │   └── git
+│   ├── .help-view
+│   ├── install
+│   ├── installer
+│   ├── lib
+│   │   ├── alias
+│   │   ├── composer
+│   │   ├── git
+│   │   ├── laravel
+│   │   ├── php
+│   │   ├── software
+│   │   └── text
+│   ├── .mdot
+│   │   └── core
+│   ├── mdot-ini
+│   ├── readme.md
+│   ├── scripts
+│   │   ├── mysql_logs
+│   │   └── mysql_truncate_tables
+│   └── symlinks
+│       └── links.sh
+├── .gitignore
+├── help
+│   └── git
+├── .help-view
+├── install
+├── installer
+├── lib
+│   ├── alias
+│   ├── composer
+│   ├── git
+│   ├── laravel
+│   ├── php
+│   ├── software
+│   └── text
+├── .mdot
+│   └── core
+├── mdot-ini
+├── readme.md
+├── scripts
+│   ├── mysql_logs
+│   └── mysql_truncate_tables
+└── symlinks
+    └── links.sh
+
+89 directories, 128 files

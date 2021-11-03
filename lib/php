@@ -1,0 +1,71 @@
+# ------------
+ # PHP
+# ------------
+
+# Cambiar version de php
+ # m-php-v 8.0: Cambiar a php 8.0
+ # m-php-v: Despliega el listado de versiones disponibles para cambiar
+function m-php-v()
+{
+    if [[ $1 ]]; then
+        version="php$1"
+    else
+        version=`ls -1 /usr/bin | grep -E '^php[0-9]' \
+        | fzf --layout=reverse-list --header="Seleccione la versión a usar" \
+        | awk '{ print $1 }' | head -1`;
+    fi
+
+    if [[ $version ]]; then
+        sudo update-alternatives --set php "/usr/bin/$version"
+    fi
+}
+
+# Ejecutar tests garantizando siempre estar en enviroment de testing
+ # Se puede pasar los parametros propios de phpunit
+function m-phpunit()
+{
+    php artisan optimize --env=testing
+    ./vendor/bin/phpunit $@
+}
+
+# Realiza los tests evaluando el coverage
+ # m-php-coverage: Devuelve el % total de coverage
+ # m-php-coverage --html: Generar archivo html para evaluar en detalle el coverage
+ # @require: phpunit
+function m-php-coverage()
+{
+    PATH_REPORT="test-reports/coverage"
+    rm -r $PATH_REPORT 2> /dev/null
+
+    echo "**** Env = testing..."
+    if [[ "$1" = "--html" ]]; then
+        php artisan optimize --env=testing
+        ./vendor/bin/phpunit --coverage-html $PATH_REPORT;
+        echo "**** Report: $PATH_REPORT/index.html"
+
+    else
+        php artisan optimize --env=testing
+        ./vendor/bin/phpunit --coverage-text=$PATH_REPORT/coverage.txt
+        E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
+        echo "**** % de Coverage: $E_LINES"
+        m-substr-line 6 9 $PATH_REPORT/coverage.txt
+    fi
+}
+
+# Ejecuta la validadacion psr
+ # Require tener el archivo .php_cs definido
+function m-php-format()
+{
+    FILE_PATH=~/format-errors.txt
+    rm $FILE_PATH > /dev/null
+
+    m-composer-json-backup
+    echo "**** Load php-cs-fixer..."
+    composer require friendsofphp/php-cs-fixer:v2.19.2 && \
+    vendor/bin/php-cs-fixer fix --using-cache=no --show-progress=yes \
+    --format=checkstyle --dry-run > $FILE_PATH;
+
+    echo "**** Restore config"
+    m-composer-json-restore   
+    echo "**** Open file report: $FILE_PATH"
+}source /home/jromero/dotfiles/mdot-ini

@@ -1,0 +1,17 @@
+# ------------
+ # Composer
+# ------------
+
+# Copia temporal de composer.json para no afectar los proyectos
+function m-composer-json-backup()
+{
+    cp composer.json composer-mbk.json
+    cp composer.lock composer-mbk.lock
+}
+
+# Restaurar copia temporal de composer.json para no afectar los proyectos
+function m-composer-json-restore()
+{
+    mv composer-mbk.json composer.json 2> /dev/null
+    mv composer-mbk.lock composer.lock 2> /dev/null
+}

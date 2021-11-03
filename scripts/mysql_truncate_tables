@@ -1,0 +1,12 @@
+#!/bin/bash
+DB_NAME="icaro"
+full_query=""
+
+mysql -uroot -pPepa1992-- -N -B -e "SELECT CONCAT('TRUNCATE TABLE $DB_NAME.', 
+TABLE_NAME, ';') AS QUERY 
+FROM information_schema.tables
+WHERE TABLE_SCHEMA = '$DB_NAME';" | while read line; do 
+  echo $line;
+  $full_query += $line;
+done
+echo "🔥 Executing: $full_query"

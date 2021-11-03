@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Path app installation
+# Require define before call
+
+# Path of library ini
+FILE_MDOT="$PATH_INSTALL/mdot-ini"
+
+# Colores
+C_RED='\033[0;31m'
+C_NC='\033[0m'
+
+
+# ------
+ # Functions
+# ------
+
+# Functions to use in app
+
+function i_br()
+{ 
+    echo "" 
+}
+
+function i_read()
+{
+    message=$(printf " ${C_RED}===>${C_NC} $1")
+    shift
+    read -e -p "$message" $@
+    i_br
+}
+
+function i_echo()
+{
+    printf "$1\n"
+}
+function i_title()
+{
+    printf "${C_RED}****${C_NC} $1\n"
+}

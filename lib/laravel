@@ -1,0 +1,63 @@
+# ------------
+ # Laravel
+# ------------
+
+# Obtener contenido encriptado utilizando bcrypt de laravel
+ # m-artisan-bcrypt "password-1234": Encriptar directamente
+ # @require: php > 8.0
+function m-artisan-bcrypt()
+{
+    DEP_ERR=$(php artisan --execute="" 2>&1 | grep 'composer')
+    if [[ $DEP_ERR ]]; then
+        echo -e "**** No se puede realizar el comando\n"
+        php artisan --execute=""
+    else
+        if [[ $1 ]]; then
+            TO_ENCRYPT=$1
+        else
+            read -e -p "Digite el contenido a encriptar: " TO_ENCRYPT
+        fi
+    
+        ENCRYPT=$(php artisan tinker --execute="echo bcrypt('$TO_ENCRYPT')")
+
+        echo $ENCRYPT
+        m-copy $ENCRYPT
+        echo "**** Copiado en el portapapeles"
+    fi
+}
+
+# Obtener contenido desencriptado utilizando decrypt de laravel
+ # m-artisan-bcrypt "password-1234": Encriptar directamente
+function m-artisan-decrypt()
+{
+    if [[ $1 ]]; then
+        TO_DECRYPT=$1
+    else
+        read -e -p "Digite el contenido a encriptar: " TO_DECRYPT
+    fi
+
+    DECRYPT=$(php artisan tinker --execute="echo decrypt('$TO_DECRYPT')")
+    echo $DECRYPT
+    m-copy $DECRYPT
+    echo "**** Copiado en el portapapeles"
+}
+
+# Shows logs generated
+function m-artisan-logs()
+{
+    PATH_LOGS="storage/logs"
+    FILE_SELECTED=$(ls -1 $PATH_LOGS \
+    | grep -E '\.log$' \
+    | fzf)
+    
+    if [[ $FILE_SELECTED ]]; then
+        tail -n0 -f -v $PATH_LOGS/$FILE 2> /dev/null
+    fi
+}
+
+# Levanta un serve usando php artisan
+ # Se pueden pasar argumentos adicionales
+function m-artisan-serve() {
+    php artisan optimize
+    php artisan serve $@
+}

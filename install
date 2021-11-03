@@ -1,0 +1,40 @@
+#!/bin/bash
+PATH_INSTALL="$PWD"
+source $PATH_INSTALL/.mdot/core
+
+# Inicio de configuración
+i_title "Se va a configurar mdot en el equipo"
+
+# Limpiar configuracion anterior de mdot
+file_source=~/.bashrc
+id_mdot="# mdot library"
+
+num=$(grep -n "$id_mdot" $file_source \
+    | awk -F ":" '{ print $1 }' \
+    | head -1
+)
+if [[ $num ]]; then
+    lines_del="$num,$(( $num +1 ))d"
+    sed -i $lines_del $file_source
+fi
+echo "$id_mdot" >> "$file_source"
+
+
+i_read "Desea poder ejecutar las funcionalidades de mdot desde cualquier instancia de consola? :" \
+    -i "Y" isGlobal
+
+if [[ "$isGlobal" == "Y" ]]; then
+    cmd_defined="source $FILE_MDOT"
+else
+    cmd_defined="alias mdot='source $FILE_MDOT'"
+fi
+echo "$cmd_defined" >> "$file_source"
+
+i_title "Usando mdot:"
+
+if [[ "$isGlobal" == "Y" ]]; then
+    i_echo "Ejecutar cualquier usando ${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
+else
+    i_echo "1. Ejecutar ${C_RED}mdot${C_NC} en la consola para habilitar temporalmente."
+    i_echo "2. Ejecutar cualquier usando {${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
+fi

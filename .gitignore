@@ -1,0 +1,7 @@
+ssh/
+help/.commands
+*private/
+.cmd-list
+
+# Log files
+*.log

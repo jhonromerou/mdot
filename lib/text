@@ -1,0 +1,12 @@
+function m-text-blines()
+{
+    line_ini=$1
+    line_end=$(( $2-line_ini+1 ))
+    file=$3
+    tail +$line_ini $file | head -$line_end
+}
+
+function m-copy()
+{
+   echo $1 | tr -d '\n\r' | xclip -selection clipboard
+}

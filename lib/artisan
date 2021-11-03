@@ -1,10 +1,3 @@
-# ------------
- # Laravel
-# ------------
-
-# Obtener contenido encriptado utilizando bcrypt de laravel
- # m-artisan-bcrypt "password-1234": Encriptar directamente
- # @require: php > 8.0
 function m-artisan-bcrypt()
 {
     DEP_ERR=$(php artisan --execute="" 2>&1 | grep 'composer')
@@ -26,6 +19,7 @@ function m-artisan-bcrypt()
     fi
 }
 
+# TODO: no está funcionando
 # Obtener contenido desencriptado utilizando decrypt de laravel
  # m-artisan-bcrypt "password-1234": Encriptar directamente
 function m-artisan-decrypt()
@@ -42,21 +36,24 @@ function m-artisan-decrypt()
     echo "**** Copiado en el portapapeles"
 }
 
-# Shows logs generated
 function m-artisan-logs()
 {
     PATH_LOGS="storage/logs"
-    FILE_SELECTED=$(ls -1 $PATH_LOGS \
+    SELECTED=$(ls -1 $PATH_LOGS \
     | grep -E '\.log$' \
-    | fzf)
-    
-    if [[ $FILE_SELECTED ]]; then
-        tail -n0 -f -v $PATH_LOGS/$FILE 2> /dev/null
+    | fzf -1)
+
+    if [[ $SELECTED ]]; then
+        FILE_SELECTED="$PATH_LOGS/$SELECTED"
+        if [[ $1 == "-f" ]]; then
+            echo "**** Follow change of $FILE_SELECTED"
+            tail -n0 -f $FILE_SELECTED
+        else
+            less $FILE_SELECTED
+        fi
     fi
 }
 
-# Levanta un serve usando php artisan
- # Se pueden pasar argumentos adicionales
 function m-artisan-serve() {
     php artisan optimize
     php artisan serve $@

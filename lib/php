@@ -1,11 +1,6 @@
-# ------------
- # PHP
-# ------------
+# TODO: Buscar format de desacoplar de php artisan
 
-# Cambiar version de php
- # m-php-v 8.0: Cambiar a php 8.0
- # m-php-v: Despliega el listado de versiones disponibles para cambiar
-function m-php-v()
+function m-php-set()
 {
     if [[ $1 ]]; then
         version="php$1"
@@ -20,18 +15,12 @@ function m-php-v()
     fi
 }
 
-# Ejecutar tests garantizando siempre estar en enviroment de testing
- # Se puede pasar los parametros propios de phpunit
-function m-phpunit()
+function m-php-unit()
 {
     php artisan optimize --env=testing
     ./vendor/bin/phpunit $@
 }
 
-# Realiza los tests evaluando el coverage
- # m-php-coverage: Devuelve el % total de coverage
- # m-php-coverage --html: Generar archivo html para evaluar en detalle el coverage
- # @require: phpunit
 function m-php-coverage()
 {
     PATH_REPORT="test-reports/coverage"
@@ -52,8 +41,6 @@ function m-php-coverage()
     fi
 }
 
-# Ejecuta la validadacion psr
- # Require tener el archivo .php_cs definido
 function m-php-format()
 {
     FILE_PATH=~/format-errors.txt
@@ -68,4 +55,4 @@ function m-php-format()
     echo "**** Restore config"
     m-composer-json-restore   
     echo "**** Open file report: $FILE_PATH"
-}source /home/jromero/dotfiles/mdot-ini
+}

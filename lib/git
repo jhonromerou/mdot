@@ -53,25 +53,27 @@ function m-git-merge()
 }
 
 # Ver listado de archivos con cambios con base al commit definido
-function m-git-diffFiles()
+function m-git-diff()
 {
     branch=$(git status | head -1 | awk '{ print $NF }')
-    user=$(git config user.email)
-    if [[ $1 ]]; then
+    param=$(m-arg-param $1)
+    value=$(m-arg-value $1)
+
+    if [[ $param ]]; then
         hash=$1
     else
         hash=$(git log --oneline $branch \
         | fzf --header="Seleccione el commit de origen: " \
-        | awk '{ print $1}')
+        | awk '{ print $1 }')
     fi
     git diff $hash^.. --stat
 }
 
 function m-git-config()
 {
-    UNABLED="branch\|remote\|core"
+    UNABLED="user\."
     VAR_VALUE=$(git config --list \
-        | grep -v $UNABLED \
+        | grep $UNABLED \
         | fzf --header="Seleccione la variable a modificar"
     )
     if [[ $VAR_VALUE ]]; then

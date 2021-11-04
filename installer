@@ -1,12 +1,14 @@
 #!/bin/bash
-echo "**** Download repository mdot"
+
 
 read -e -p "Define directory to save mdot :~/" -i "mdot" path_install
 
-echo "Directory created: $path_install"
+echo ""
 
-git clone https://github.com/jhonromerou/mdot
-mv mdot ~/$path_install
+echo "**** Download repository mdot"
+git clone https://github.com/jhonromerou/mdot $path_install
+echo ""
+
 cd ~/$path_install
 chmod +x install
 

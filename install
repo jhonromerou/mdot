@@ -7,7 +7,7 @@ MDOT_INI="$MDOT_BIN/mdot-ini"
 source $MDOT_BIN/.mdot/core
 
 # Inicio de configuración
-i_title "Configuradno MDOT para su usuario"
+i_title "Configurando MDOT para su usuario"
 
 # Limpiar configuracion anterior de mdot
 file_source=~/.bashrc
@@ -41,10 +41,10 @@ echo "$cmd_defined" >> "$file_source"
 i_title "Usando mdot:"
 
 if [[ "$isGlobal" == "Y" ]]; then
-    i_echo "Ejecutar cualquier usando ${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
+    i_echo "Ejecutar cualquier funcionalidad usando ${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
 else
     i_echo "1. Ejecutar ${C_RED}mdot${C_NC} en la consola para habilitar temporalmente."
-    i_echo "2. Ejecutar cualquier usando {${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
+    i_echo "2. Ejecutar cualquier comando usando {${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
 fi
 
 if test -f ".env"; then

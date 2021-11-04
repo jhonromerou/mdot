@@ -6,7 +6,7 @@ read -e -p "Define directory to save mdot :~/" -i "mdot" path_install
 echo ""
 
 echo "**** Download repository mdot"
-git clone https://github.com/jhonromerou/mdot $path_install
+git clone https://github.com/jhonromerou/mdot ~/$path_install
 echo ""
 
 cd ~/$path_install

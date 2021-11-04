@@ -1,0 +1,99 @@
+
+function mdot-reload()
+{
+    source $MDOT_BIN/.mdot/core
+    i_title "MDOT reload ⚡⚡⚡"
+
+    MDOT_LOADED=false
+    source $MDOT_INI
+}
+
+# Load all
+function mdot-loader-imports()
+{
+    for file_source in $(find "$MDOT_MODULES" -type f); do 
+        source $file_source
+    done
+}
+
+# Writes all commands in file
+function mdot-loader-cmds()
+{
+    rm -r $MDOT_HELP_CMDS &> /dev/null
+    mkdir -p $MDOT_HELP_CMDS &> /dev/null
+    echo "" > $MDOT_HELP_LIST
+
+    for module_file in $(find "$MDOT_MODULES" -type f); do 
+        # gets each line with methods
+        grep -n 'function ' $module_file | while read -r actual_line; do
+            # gets line num of method: line=1, 24
+            line_num_pos=$(echo $actual_line | awk -F ":" '{ print $1 }')
+
+            # gets name of method: Ex: [m-php-unit] 
+            METHOD_NAME=$(tail +$line_num_pos $module_file \
+                | head -1 \
+                | awk -F "function " '{ print $2 }' \
+                | awk -F "\(\)" '{ print $1 }'
+            )
+            echo "$METHOD_NAME" >> $MDOT_HELP_LIST
+        done
+    done
+}
+
+function mdot-loader-wikis()
+{
+    mdot-loader-cmds
+
+    for METHOD_NAME in $(grep -E ".+" $MDOT_HELP_LIST); do
+        module_name=$(echo $METHOD_NAME \
+            | awk -F "-" '{ print $2 }'
+        )
+
+        FILE_MODULE_WIKI="$MDOT_HELP/$module_name"
+        FILE_METHOD_WIKI="$MDOT_HELP_CMDS/$METHOD_NAME"
+        echo -e "$METHOD_NAME:\nNo hay documentación disponible aún." > "$FILE_METHOD_WIKI"
+        
+        if test -f "$FILE_MODULE_WIKI"; then
+            LINE_INI=$(m-grep-line $METHOD_NAME $FILE_MODULE_WIKI)
+        fi
+
+        if [[ $LINE_INI ]]; then
+            LINE_END=$(tail +$LINE_INI $FILE_MODULE_WIKI | m-grep-line '\.$')
+            LINE_END=$(( LINE_END + LINE_INI))
+
+            if [[ "$LINE_INI" -eq 1 ]]; then
+               LINE_END=$(( LINE_END -2 ))
+            fi
+            
+            m-text-blines $LINE_INI $LINE_END $FILE_MODULE_WIKI > $FILE_METHOD_WIKI
+        fi
+    done
+}
+
+function mdot-loader-clear(){
+    unset -f mdot-loader-imports
+    unset -f mdot-loader-cmds
+    unset -f mdot-loader-wikis
+    unset -f mdot-loader-clear
+    unset -f mdot-loader-custom-imports
+}
+
+# Loade custom libraries
+function mdot-loader-custom-imports()
+{
+    if [[ $MDOT_CUSTOM_LIBRARIES ]]; then
+        path="$MDOT_BIN/$MDOT_CUSTOM_LIBRARIES"
+        for custom_lib  in $(ls -1 $path); do
+            source "$path/$custom_lib"
+        done
+    fi
+}
+
+function m--arg-param()
+{
+    echo "$1" | awk -F "=" '{ print $1 }'
+}
+function m--arg-value()
+{
+    echo "$1" | awk -F "=" '{ print $2 }'
+}

@@ -46,3 +46,10 @@ else
     i_echo "1. Ejecutar ${C_RED}mdot${C_NC} en la consola para habilitar temporalmente."
     i_echo "2. Ejecutar cualquier usando {${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
 fi
+
+if test -f ".env"; then
+    i_title ".env ya existe, no se modifico"
+else
+    i_title ".env no existe, se genera desde .env-example"
+    cp .env-example .env
+fi

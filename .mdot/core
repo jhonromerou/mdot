@@ -1,10 +1,6 @@
-#!/bin/bash
 
 # Path app installation
 # Require define before call
-
-# Path of library ini
-FILE_MDOT="$PATH_INSTALL/mdot-ini"
 
 # Colores
 C_RED='\033[0;31m'
@@ -34,7 +30,29 @@ function i_echo()
 {
     printf "$1\n"
 }
+
 function i_title()
 {
     printf "${C_RED}****${C_NC} $1\n"
+}
+
+function mdot-core-clear(){
+    unset -f i_title
+    unset -f i_echo
+    unset -f i_read
+    unset -f i_br
+    unset -f mdot-core-clear
+}
+
+# TODO: refactor
+
+# Detiene el proceso que esté usando el puerto tcp definido
+ # m-kill-port 80:
+function m-kill-port () {
+    fuser -k -n tcp $@
+}
+
+function m-grep-line()
+{
+    grep -n $@ | awk -F ":" '{ print $1 }' | head -1
 }

@@ -1,9 +1,13 @@
 #!/bin/bash
-PATH_INSTALL="$PWD"
-source $PATH_INSTALL/.mdot/core
+
+# TODO: translate to english
+
+MDOT_BIN="$PWD"
+MDOT_INI="$MDOT_BIN/mdot-ini"
+source $MDOT_BIN/.mdot/core
 
 # Inicio de configuración
-i_title "Se va a configurar mdot en el equipo"
+i_title "Configuradno MDOT para su usuario"
 
 # Limpiar configuracion anterior de mdot
 file_source=~/.bashrc
@@ -14,19 +18,23 @@ num=$(grep -n "$id_mdot" $file_source \
     | head -1
 )
 if [[ $num ]]; then
-    lines_del="$num,$(( $num +1 ))d"
+    lines_del="$num,$(( $num +2 ))d"
     sed -i $lines_del $file_source
+
+    i_title "mdot unistall!"
 fi
+
+i_read "Desea ejecutar mdot globalmente? :" \
+    -i "Y" useGlobal
+
+# Defines id and path_global
 echo "$id_mdot" >> "$file_source"
+echo "MDOT_BIN=\"$MDOT_BIN\"" >> "$file_source"
 
-
-i_read "Desea poder ejecutar las funcionalidades de mdot desde cualquier instancia de consola? :" \
-    -i "Y" isGlobal
-
-if [[ "$isGlobal" == "Y" ]]; then
-    cmd_defined="source $FILE_MDOT"
+if [[ "$useGlobal" == "Y" ]]; then
+    cmd_defined="source $MDOT_INI"
 else
-    cmd_defined="alias mdot='source $FILE_MDOT'"
+    cmd_defined="alias mdot='source $MDOT_INI'"
 fi
 echo "$cmd_defined" >> "$file_source"
 

@@ -1,7 +1,4 @@
-# ----
- # Funcionalidades de git
-# ----
-
+#!/usr/bin/env bash
 
 # Listar las ramas y devolver nombre de la seleccionada.
 # Solo muestra las activas

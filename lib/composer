@@ -1,6 +1,4 @@
-# ------------
- # Composer
-# ------------
+#!/usr/bin/env bash
 
 # Copia temporal de composer.json para no afectar los proyectos
 function m-composer-json-backup()

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+function m-phpunit()
+{
+    php artisan optimize --env=testing
+    ./vendor/bin/phpunit $@
+}
+
+function m-phpunit-coverage()
+{
+    PATH_REPORT="test-reports/coverage"
+    rm -r $PATH_REPORT 2> /dev/null
+
+    echo "**** Env = testing..."
+    php artisan optimize --env=testing
+    if [[ "$1" = "--html" ]]; then
+        ./vendor/bin/phpunit --coverage-html $PATH_REPORT;
+        echo "**** Report: $PATH_REPORT/index.html"
+        $MDOT_ENV_BROWSER $PATH_REPORT/index.html
+
+    else
+        ./vendor/bin/phpunit --coverage-text=$PATH_REPORT/coverage.txt
+        E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
+        echo "**** % de Coverage: $E_LINES"
+        m-substr-line 6 9 $PATH_REPORT/coverage.txt
+    fi
+}
+
+function m-php-format()
+{
+    FILE_PATH=~/format-errors.txt
+    rm $FILE_PATH > /dev/null
+    require_lib="friendsofphp/php-cs-fixer:v2.19.2";
+
+    m-composer-json-backup
+    echo "**** Load php-cs-fixer..."
+    composer require $require_lib && \
+    vendor/bin/php-cs-fixer fix --using-cache=no --show-progress=yes \
+    --format=checkstyle --dry-run > $FILE_PATH
+
+    echo "**** Restore config"
+    m-composer-json-restore   
+    echo "**** Open file report: $FILE_PATH"
+}

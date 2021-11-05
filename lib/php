@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # TODO: Buscar format de desacoplar de php artisan
 
 function m-php-set()
@@ -15,44 +17,68 @@ function m-php-set()
     fi
 }
 
-function m-php-unit()
-{
-    php artisan optimize --env=testing
-    ./vendor/bin/phpunit $@
-}
+function m-php-v(){
+    php_v=$(php -v | head -1 | awk '{ print $2 }')
 
-function m-php-coverage()
-{
-    PATH_REPORT="test-reports/coverage"
-    rm -r $PATH_REPORT 2> /dev/null
-
-    echo "**** Env = testing..."
-    if [[ "$1" = "--html" ]]; then
-        php artisan optimize --env=testing
-        ./vendor/bin/phpunit --coverage-html $PATH_REPORT;
-        echo "**** Report: $PATH_REPORT/index.html"
-
-    else
-        php artisan optimize --env=testing
-        ./vendor/bin/phpunit --coverage-text=$PATH_REPORT/coverage.txt
-        E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
-        echo "**** % de Coverage: $E_LINES"
-        m-substr-line 6 9 $PATH_REPORT/coverage.txt
+    if [ "$1" != "--all" ]; then
+        php_v=$(echo "$php_v" | awk -F "." '{ print $1"."$2 }')
     fi
+    echo $php_v
 }
 
-function m-php-format()
+function m-php-ext-enable()
 {
-    FILE_PATH=~/format-errors.txt
-    rm $FILE_PATH > /dev/null
+    version_to_use=$1
+    if [ "$version_to_use" ]; then
+        php_v="$version_to_use"
+    else
+        php_v=$(m-php-v)
+    fi
 
-    m-composer-json-backup
-    echo "**** Load php-cs-fixer..."
-    composer require friendsofphp/php-cs-fixer:v2.19.2 && \
-    vendor/bin/php-cs-fixer fix --using-cache=no --show-progress=yes \
-    --format=checkstyle --dry-run > $FILE_PATH;
+    path="/etc/php/$php_v/mods-available"
+    
+    cd $path
+    ext_sel=$(grep -r $path -e '^[;].*extension' \
+     | awk -F ":" '{ print $1 }' \
+     | fzf --preview='head {}'
+    )
 
-    echo "**** Restore config"
-    m-composer-json-restore   
-    echo "**** Open file report: $FILE_PATH"
+    if [[ $ext_sel ]]; then
+        line_num=$(grep -ne '^[;].*extension' $ext_sel | awk -F ":" '{ print $1 }')
+        sudo sed -i '3s/;//' $ext_sel
+        echo "Extension enabled"
+        echo $ext_sel
+    fi
+
+    cd $MDOT_PWD
+}
+
+function m-php-ext-disable()
+{
+    version_to_use=$1
+    if [ "$version_to_use" ]; then
+        php_v="$version_to_use"
+    else
+        php_v=$(m-php-v)
+    fi
+
+    path="/etc/php/$php_v/mods-available"
+
+    cd $path
+    ext_sel=$(grep -rsv . -e '^;.*extension' \
+        | awk -F ":" '{ print $1 }' \
+        | awk -F "./" '{ print $2 }' \
+        | fzf --preview='head {}'
+    )
+
+    if [[ $ext_sel ]]; then
+        line=$(grep -n ".*extension" $ext_sel)
+        line_num=$(echo "$line" | awk -F ":" '{ print $1 }')
+        line_txt=$(echo "$line" | awk -F ":" '{ print $2 }')
+        sudo sed -i "${line_num}s/${line_txt}/;${line_txt}/" $path/$ext_sel
+        echo "Extension disabled"
+        echo $path/$ext_sel
+    fi
+
+    cd $MDOT_PWD
 }

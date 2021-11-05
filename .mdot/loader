@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 function mdot-reload()
 {
@@ -29,7 +30,7 @@ function mdot-loader-cmds()
             # gets line num of method: line=1, 24
             line_num_pos=$(echo $actual_line | awk -F ":" '{ print $1 }')
 
-            # gets name of method: Ex: [m-php-unit] 
+            # gets name of method: Ex: [m-php-unit]
             METHOD_NAME=$(tail +$line_num_pos $module_file \
                 | head -1 \
                 | awk -F "function " '{ print $2 }' \
@@ -55,17 +56,16 @@ function mdot-loader-wikis()
         
         if test -f "$FILE_MODULE_WIKI"; then
             LINE_INI=$(m-grep-line $METHOD_NAME $FILE_MODULE_WIKI)
-        fi
 
-        if [[ $LINE_INI ]]; then
-            LINE_END=$(tail +$LINE_INI $FILE_MODULE_WIKI | m-grep-line '\.$')
-            LINE_END=$(( LINE_END + LINE_INI))
+            if [ "$LINE_INI" ]; then
+                LINE_END=$(tail +$LINE_INI $FILE_MODULE_WIKI | m-grep-line '\.$')
+                LINE_END=$(( LINE_END + LINE_INI))
 
-            if [[ "$LINE_INI" -eq 1 ]]; then
-               LINE_END=$(( LINE_END -2 ))
+                if [[ "$LINE_INI" -eq 1 ]]; then
+                    LINE_END=$(( LINE_END -2 ))
+                fi
+                m-text-blines $LINE_INI $LINE_END $FILE_MODULE_WIKI > $FILE_METHOD_WIKI
             fi
-            
-            m-text-blines $LINE_INI $LINE_END $FILE_MODULE_WIKI > $FILE_METHOD_WIKI
         fi
     done
 }

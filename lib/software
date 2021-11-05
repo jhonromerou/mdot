@@ -1,6 +1,4 @@
-# ------------
- # Software / Programs
-# ------------
+#!/usr/bin/env bash
 
 # Abre el programa que administra base de datos de mongo
 function m-mongo-admin()

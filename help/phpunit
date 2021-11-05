@@ -1,0 +1,17 @@
+m-phpunit:
+# USOS
+  - m-phpunit
+  - m-phpunit tests/unit/dirtotest --stop-on-errors
+# DESCRIPCION
+  Ejecuta los tests definiendo siempre el ambiente testing.
+  Permite pasar los parametros propios de phpunit
+.
+
+m-phpunit-coverage:
+# USOS
+  - m-phpunit-coverage
+  - m-phpunit-coverage --html
+# DESCRIPTION
+  Evalua el coverage usando el ambiente de testing.
+  Si se pasa el flag [--html] genera el reporte en coverage/index.html
+.

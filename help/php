@@ -5,20 +5,17 @@ m-php-set:
 # DESCRIPCION
   - Cambia la version de php teniendo en cuenta las versiones instaladas
 .
-m-php-unit:
+m-php-ext-enable:
 # USOS
-  - m-phpunit
-  - m-phpunit tests/unit/dirtotest --stop-on-errors
-# DESCRIPCION
-  Ejecuta los tests definiendo siempre el ambiente testing.
-  Permite pasar los parametros propios de phpunit
-.
-
-m-php-coverage:
-# USOS
-  - m-php-coverage
-  - m-php-coverage --html
+  - m-php-ext-enable
+  - m-php-ext-enable [8.0|7.5|n.n]
 # DESCRIPTION
-  Evalua el coverage usando el ambiente de testing.
-  Si se pasa el flag [--html] genera el reporte en coverage/index.html
+  Lista las extensiones deshabilitads, la seleccionada se habilita
+.
+m-php-ext-disable:
+# USOS
+  - m-php-ext-disable
+  - m-php-ext-disable [8.0|7.5|n.n]
+# DESCRIPTION
+  Lista las extensiones activas, la seleccionada se deshabilita
 .

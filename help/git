@@ -2,17 +2,15 @@ m-git-merge:
 # USOS
      m-git-merge <branch-to-merge>
      m-git-merge
-
 # DESCRIPCION
      Sincroniza la rama a fusionar.
      Hace merge de una rama definida tomando como base la rama actual.
-.
+
 m-git-checkout:
 # USOS
      - m-git-checkout <branch>
      - m-git-checkout
-
 # DESCRIPCION
      Cambiar directamente a la rama definida
      Generar un listado con las ramas disponibles y cambia a la seleccionada
-.
+

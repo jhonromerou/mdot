@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
-# Listar las ramas y devolver nombre de la seleccionada.
+# Listar las ramas excepto las remotas
 # Solo muestra las activas
 function m-git-branches()
 {
-    branch=$(git branch --no-merged \
-        | fzf --header="Seleccione la rama a la que quiere cambiar: " \
+    BRANCHE_USED=$(git branch --show-current)
+    branch=$(git branch --all  \
+        | grep -v "remotes/" \
+        | grep -v "$BRANCHE_USED" \
+        | fzf --header="Seleccione una rama: " \
         | awk '{ print $1 }'
     )
     echo $branch
@@ -17,13 +20,11 @@ function m-git-checkout()
     if [[ $1 ]]; then
         branch=$@
     else
-        branch=$(git branch --no-merged \
-        | fzf --header="Seleccione la rama a la que quiere cambiar: " \
-        | awk '{ print $1 }')
+        branch=$(m-git-branches)
     fi
 
     if [[ $branch ]]; then
-        git checkout "$branch"
+        git checkout $branch
     fi
 }
 
@@ -34,17 +35,16 @@ function m-git-merge()
     if [[ $1 ]]; then
         branch=$1
     else
-        branch=$(git branch \
-        | fzf --header="Seleccione la rama que quiere fusionar: " \
-        | awk '{ print $1 }')
+        branch=$(m-git-branches)
     fi
 
     if [[ $branch ]]; then
-        echo "**** Sincronizando rama: $branch"
-        git checkout $branch &> /dev/null
-        git pull
-        echo "**** Fusionando en rama: $BRANCHE_USED"
-        git checkout $BRANCHE_USED  &> /dev/null
+        i_mdot_title "Sincronizando rama: $branch"
+        git checkout $branch
+        git fetch -ap
+
+        i_mdot_title "Fusionando en rama: $BRANCHE_USED"
+        git checkout $BRANCHE_USED
         git merge $branch
     fi
 }
@@ -54,7 +54,6 @@ function m-git-diff()
 {
     branch=$(git status | head -1 | awk '{ print $NF }')
     param=$(m-arg-param $1)
-    value=$(m-arg-value $1)
 
     if [[ $param ]]; then
         hash=$1
@@ -68,17 +67,39 @@ function m-git-diff()
 
 function m-git-config()
 {
-    UNABLED="user\."
     VAR_VALUE=$(git config --list \
-        | grep $UNABLED \
+        | grep -v "branch\." \
+        | grep -v "remote\.origin\.fetch" \
         | fzf --header="Seleccione la variable a modificar"
     )
     if [[ $VAR_VALUE ]]; then
         VAR_NAME=$(echo $VAR_VALUE | awk -F "=" '{ print $1 }')
-        read -e -p "Digite el nuevo valor para $VAR_NAME: " NEW_VALUE
+        OLD_VALUE=$(echo $VAR_VALUE | awk -F "=" '{ print $2 }')
+        read -e -p "Digite el nuevo valor para $VAR_NAME: " -i "$OLD_VALUE" NEW_VALUE
     fi
 
     if [[ $NEW_VALUE ]]; then
-        git config $VAR_NAME "$NEW_VALUE"
+        git config "$VAR_NAME" "$NEW_VALUE"
+    fi
+}
+
+function m-git-rebuild()
+{
+    base=$(git config --list | grep "remote.origin.url")
+    origin=$(echo $base | awk -F "=" '{print $2}')
+    repo=$(echo $base | awk -F "/" '{print $2}')
+    folder_backup=~/mdot/backups/$repo
+
+    echo -e "Se borrara el repositorio local y se volvera a reconstruir todo."
+    echo "Se creara una copia en $folder_backup"
+    read -e -p " Esta seguro Y/N?: " reset
+    if [[ "$reset" = "Y" ]]; then
+        sudo rm -rf $folder_backup
+        mkdir -p $folder_backup
+        cp -arp .git/. $folder_backup
+        rm -rf .git
+        git init
+        git remote add origin $origin
+        git add .
     fi
 }

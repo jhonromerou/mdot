@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# TODO: Buscar format de desacoplar de php artisan
 
-function m-php-set()
+function m-php()
 {
     if [[ $1 ]]; then
         version="php$1"

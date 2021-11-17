@@ -2,43 +2,83 @@
 
 function m-phpunit()
 {
-    php artisan optimize --env=testing
-    ./vendor/bin/phpunit $@
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        m-artisan-test
+        vendor/bin/phpunit $@
+    fi
 }
 
 function m-phpunit-coverage()
 {
-    PATH_REPORT="test-reports/coverage"
-    rm -r $PATH_REPORT 2> /dev/null
-
-    echo "**** Env = testing..."
-    php artisan optimize --env=testing
-    if [[ "$1" = "--html" ]]; then
-        ./vendor/bin/phpunit --coverage-html $PATH_REPORT;
-        echo "**** Report: $PATH_REPORT/index.html"
-        $MDOT_ENV_BROWSER $PATH_REPORT/index.html
-
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
     else
-        ./vendor/bin/phpunit --coverage-text=$PATH_REPORT/coverage.txt
-        E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
-        echo "**** % de Coverage: $E_LINES"
-        m-substr-line 6 9 $PATH_REPORT/coverage.txt
+        m-artisan-test
+        PATH_REPORT="$MDOT_TMP/coverage"
+        rm -r $PATH_REPORT 2> /dev/null
+        if [[ "$1" = "--html" ]]; then
+            php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-html=$PATH_REPORT
+            i_mdot_title "Reporte de coverage: $PATH_REPORT/index.html"
+            m-apps-open $MDOT_ENV_BROWSER $PATH_REPORT/index.html
+        else
+            vendor/bin/phpunit --coverage-text=$PATH_REPORT/coverage.txt
+            E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
+            i_mdot_title "% de Coverage: $E_LINES"
+            m-text-blines 6 9 $PATH_REPORT/coverage.txt
+        fi
     fi
 }
 
-function m-php-format()
+function m-phpunit-custom()
 {
-    FILE_PATH=~/format-errors.txt
-    rm $FILE_PATH > /dev/null
-    require_lib="friendsofphp/php-cs-fixer:v2.19.2";
+    mdot-tmp
+    filename="$MDOT_TMP/tests-list"
+    if [ -f "$filename" ]; then
+        path_test="tests"
+        path_bk="tests-bk"
+        if ! [ -d $path_bk ]; then
+            i_mdot_title "Se mueve directorio tests/ a tests-bk/"
+            i_mdot_title "Liste los tests especificos que quiere ejecutar"
+            echo "en el archivo $filename"
+            mv $path_test $path_bk
+            mkdir $path_test
+        fi
 
-    m-composer-json-backup
-    echo "**** Load php-cs-fixer..."
-    composer require $require_lib && \
-    vendor/bin/php-cs-fixer fix --using-cache=no --show-progress=yes \
-    --format=checkstyle --dry-run > $FILE_PATH
+        i_mdot_title "Obteniendo tests especificos desde $filename"
+        while read line; do
+            file=$(basename $line)
+            path=${line/"$file"/""}
+            path=${path/"$path_bk"/"$path_test"}
+            mkdir -p $path
+            cp $line "$path/$file"
+        done < $filename
+    fi
+}
 
-    echo "**** Restore config"
-    m-composer-json-restore   
-    echo "**** Open file report: $FILE_PATH"
+# Require composer and php-cs-fixer 2.19
+function m-php-cs()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        mdot-tmp
+        FILE_PATH="$MDOT_TMP/format-errors.txt"
+        rm -f $FILE_PATH > /dev/null
+
+        echo "**** Cargando php-cs-fixer..."
+        path_install="$MDOT_TMP/composer/php-cs-fixer"
+        require_lib="friendsofphp/php-cs-fixer:v2.19.2"
+        composer require -q --working-dir=$path_install \
+        --dev $require_lib
+
+        "$path_install/vendor/bin/php-cs-fixer" fix --using-cache=no --show-progress=yes \
+        --format=checkstyle --dry-run > $FILE_PATH
+
+        echo "**** Reporte generado: $FILE_PATH"
+    fi
 }

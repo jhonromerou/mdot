@@ -32,13 +32,13 @@ function i_echo()
     printf "$1\n"
 }
 
-function i_title()
+function i_mdot_title()
 {
     printf "${C_RED}****${C_NC} $1\n"
 }
 
 function mdot-core-clear(){
-    unset -f i_title
+    #unset -f i_mdot_title
     unset -f i_echo
     unset -f i_read
     unset -f i_br

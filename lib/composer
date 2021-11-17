@@ -13,3 +13,12 @@ function m-composer-json-restore()
     mv composer-mbk.json composer.json 2> /dev/null
     mv composer-mbk.lock composer.lock 2> /dev/null
 }
+
+function m-composer-required()
+{
+     if ([ -f "composer.json" ] && [ -d "vendor" ]); then
+        echo false
+    else
+        echo "Composer is required but not found."
+    fi
+}

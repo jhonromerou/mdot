@@ -12,6 +12,7 @@ source $MDOT_BIN/.mdot/loader
 
 # Saves directory to return it when command uses cd <path>
 MDOT_PWD=$PWD
+MDOT_TMP="mdot-temp"
 
 # Path of libraries
 MDOT_MODULES=$MDOT_BIN/lib;
@@ -23,11 +24,7 @@ MDOT_HELP_LIST="$MDOT_HELP/.commands/.list";
 
 
 # Start
-if [ "$MDOT_LOADED" = true ]; then
-    i_title "MDOT is loaded"
-    i_echo "If whant reload all use: mdot-reload"
-    
-else
+if ! [ -f $MDOT_HELP_LIST ]; then
     # Just one loaded!
     MDOT_LOADED=true
 
@@ -41,15 +38,38 @@ else
     mdot-loader-clear
 fi
 
+function mdot-tmp()
+{
+    mkdir -p $MDOT_TMP
+    mkdir -p "$MDOT_TMP/composer/php-cs-fixer"
+    # File with list of files to testing
+    touch "$MDOT_TMP/tests-list"
+}
+
+# Deletes mdot temporary
+function mdot-clear()
+{
+    if [ -d "tests-bk" ]; then
+        echo "Se va a reemplazar el directorio tests/ con el contenidoo de tests-bk/"
+        read -e -p "Desea continuar (Y)?: " ok
+        if [ "$ok" = "Y" ]; then
+            rm -r "tests"
+            mv tests-bk tests
+        fi
+    fi
+    rm -rf $MDOT_TMP
+}
+
+
 # Lists all commands and shows help
 function m-help()
 {
     cd $MDOT_HELP_CMDS
     METHOD_NAME=$(ls -1 \
-        | fzf --color="light" --preview="head -100 {}"
+        | fzf --color="light" --preview="head {}"
     )
     if test -f "$METHOD_NAME"; then
-        less $METHOD_NAME
+        cat $METHOD_NAME
     fi
     cd $MDOT_PWD
 }

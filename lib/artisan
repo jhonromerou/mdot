@@ -59,3 +59,9 @@ function m-artisan-serve() {
     php artisan optimize
     php artisan serve $@
 }
+
+function m-artisan-test()
+{
+    echo "*** --env=testing"
+    php artisan optimize --env=testing
+}

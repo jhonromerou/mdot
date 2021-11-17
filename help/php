@@ -1,21 +1,21 @@
-m-php-set:
+m-php:
 # USOS
   - m-php-set
   - m-php-set 8.0
 # DESCRIPCION
   - Cambia la version de php teniendo en cuenta las versiones instaladas
-.
+
 m-php-ext-enable:
 # USOS
   - m-php-ext-enable
   - m-php-ext-enable [8.0|7.5|n.n]
 # DESCRIPTION
   Lista las extensiones deshabilitads, la seleccionada se habilita
-.
+
 m-php-ext-disable:
 # USOS
   - m-php-ext-disable
   - m-php-ext-disable [8.0|7.5|n.n]
 # DESCRIPTION
   Lista las extensiones activas, la seleccionada se deshabilita
-.
+

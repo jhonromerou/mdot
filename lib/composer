@@ -19,6 +19,6 @@ function m-composer-required()
      if ([ -f "composer.json" ] && [ -d "vendor" ]); then
         echo false
     else
-        echo "Composer is required but not found."
+        i_mdot_err "Composer is required but not found."
     fi
 }

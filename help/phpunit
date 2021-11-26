@@ -1,25 +1,21 @@
 m-phpunit:
-# USOS
-  - m-phpunit
-  - m-phpunit tests/unit/dirtotest --stop-on-errors
-# DESCRIPCION
-  Ejecuta los tests definiendo siempre el ambiente testing.
-  Permite pasar los parametros propios de phpunit
+ Ejecuta los tests definiendo siempre el ambiente testing.
+ Permite pasar los parametros propios de phpunit
+ 
+ Syntax: m-phpunit [args to vendor/bin/phpunit]
 
 m-phpunit-coverage:
-# USOS
-  - m-phpunit-coverage
-  - m-phpunit-coverage --html
-# DESCRIPCION
-  Evalua el coverage usando el ambiente de testing.
-  Si se pasa el flag [--html] genera el reporte en coverage/index.html
+ Evalua el coverage usando el ambiente de testing.
+ Si se pasa el flag [--html] genera el reporte en coverage/index.html
+ 
+ Syntax: m-phpunit-coverage [--html]
 
 m-phpunit-custom:
-# USOS
-  - m-phpunit-custom
-# DESCRIPCION
-  Permite ejecutar tests especificos definidos en el archivo de configuración.
-  - Crea una copia de tests/ en tests-bk/
-  - Los tests definidos (relative path) en el archivo mdot-tmp/tests.list
-  se copian en tests/ para ser ejecutados
+ Debe ejecutarse 2 veces, 1 para definir y otra para actualizar.
+ Permite ejecutar tests especificos definidos en el ./mdot-tmp/tests.list
+  - Se crea una copia de ./tests/ en ./tests-bk/
+  - Los tests definidos en el archivo mdot-tmp/tests.list,
+  se copian en ./tests/ para ser ejecutados exclusivamente.
+ 
+ Syntax: m-phpunit-custom
 

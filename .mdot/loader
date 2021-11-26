@@ -4,7 +4,7 @@ function mdot-reload()
 {
     rm $MDOT_HELP_LIST
     source $MDOT_BIN/.mdot/core
-    i_mdot_title "MDOT reload ⚡⚡⚡"
+    echo "🚀🚀🚀 MDOT reload"
 
     source $MDOT_INI
 }
@@ -52,13 +52,14 @@ function mdot-loader-wikis()
 
         FILE_MODULE_WIKI="$MDOT_HELP/$module_name"
         FILE_METHOD_WIKI="$MDOT_HELP_CMDS/$METHOD_NAME"
-        echo -e "$METHOD_NAME:\nNo hay documentación disponible aún." > "$FILE_METHOD_WIKI"
+        echo -e "No hay documentación disponible aún." > "$FILE_METHOD_WIKI"
         
         if [ -f "$FILE_MODULE_WIKI" ]; then
             LINE_INI=$(m-grep-line $METHOD_NAME: $FILE_MODULE_WIKI)
             if [ "$LINE_INI" ]; then
                 LINE_END=$(tail +$LINE_INI $FILE_MODULE_WIKI | m-grep-line '^$')
                 LINE_END=$(( LINE_END + LINE_INI - 2))
+                LINE_INI=$(( LINE_INI +1 ))
                 m-text-blines $LINE_INI $LINE_END $FILE_MODULE_WIKI > $FILE_METHOD_WIKI
             fi
         fi

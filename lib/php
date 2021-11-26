@@ -81,3 +81,79 @@ function m-php-ext-disable()
 
     cd $MDOT_PWD
 }
+
+#
+ #Require composer
+#
+
+function m-php-cs()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        mdot-tmp
+        FILE_PATH="$MDOT_TMP/format-errors.txt"
+        rm -f $FILE_PATH > /dev/null
+
+        i_mdot_title "Cargando php-cs-fixer..."
+        if [ -f ".php_cs" ]; then
+            require_lib="friendsofphp/php-cs-fixer:v2.19.2"
+            cs_vhelp="#version:2.19"
+        else
+            require_lib="friendsofphp/php-cs-fixer"
+            cs_vhelp="#latest"
+        fi
+
+        path_install="$MDOT_TMP/composer"
+        composer require -q --working-dir=$path_install --dev $require_lib
+
+        "$path_install/vendor/bin/php-cs-fixer" fix --using-cache=no --show-progress=yes \
+        --format=checkstyle --dry-run > $FILE_PATH
+
+        i_mdot_title "Reporte generado 📰📰 $FILE_PATH"
+        num_errors=$(grep -c "<error" $FILE_PATH)
+        if [ "$num_errors" -gt 0 ]; then
+            echo "😵😵 Se encontraron $num_errors errores de formato: "
+            echo "  Puede obtener ayuda en el siguiente enlace"
+            echo "  https://mlocati.github.io/php-cs-fixer-configurator/$cs_vhelp"
+        fi
+    fi
+}
+
+function m-php-stan()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        mdot-tmp
+        memory_limit="300M"
+        if [[ "$1" ]]; then
+            memory_limit=$1
+        fi
+
+        i_mdot_title "Revisando con php-stand... --memory-limit $memory_limit"
+
+        path_install=""
+        if ! [ -d "vendor/phpstan" ]; then
+            path_install="$MDOT_TMP/composer/"
+            composer require -q --working-dir=$path_install \
+            --dev phpstan/phpstan:0.11
+        fi
+
+        report_errors="$MDOT_TMP/static-errors.txt"
+        report_fatals="$MDOT_TMP/static-fatal.txt"
+        "${path_install}vendor/bin/phpstan" analyse --no-progress --memory-limit=$memory_limit \
+        > $report_errors \
+        2> $report_fatals
+
+        num_errors=$(grep "\[ERROR\] Found" $report_errors | grep -o "[0-9]\{1,\}")
+        # TODO: calcular correctamente fatals, muestra 0
+        num_fatals=$(grep -c "Fatal error" $report_fatals)
+
+        i_mdot_title "Reportes generados:"
+        echo "📰📰 ${report_errors} 👾 ${num_errors}"
+        echo "📰📰 ${report_fatals} 👾 ${num_fatals}"
+    fi
+}

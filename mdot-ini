@@ -24,26 +24,24 @@ MDOT_HELP_LIST="$MDOT_HELP/.commands/.list";
 
 
 # Start
+# Imports and defines wikis
+mdot-loader-imports
+mdot-loader-custom-imports
 if ! [ -f $MDOT_HELP_LIST ]; then
-    # Just one loaded!
-    MDOT_LOADED=true
-
-    # Imports and defines wikis
-    mdot-loader-imports
-    mdot-loader-custom-imports
     mdot-loader-wikis
-
-    # Clear mdot internal libraries
-    mdot-core-clear
-    mdot-loader-clear
 fi
+# Clear mdot internal libraries
+mdot-core-clear
+mdot-loader-clear
 
 function mdot-tmp()
 {
     mkdir -p $MDOT_TMP
-    mkdir -p "$MDOT_TMP/composer/php-cs-fixer"
-    # File with list of files to testing
-    touch "$MDOT_TMP/tests-list"
+    mkdir -p "$MDOT_TMP/coverage"
+    mkdir -p "$MDOT_TMP/composer"
+    gitignore="$MDOT_TMP/.gitignore"
+    rm -f 
+    echo "*" > $gitignore
 }
 
 # Deletes mdot temporary
@@ -60,16 +58,20 @@ function mdot-clear()
     rm -rf $MDOT_TMP
 }
 
-
 # Lists all commands and shows help
 function m-help()
 {
     cd $MDOT_HELP_CMDS
-    METHOD_NAME=$(ls -1 \
-        | fzf --color="light" --preview="head {}"
-    )
-    if test -f "$METHOD_NAME"; then
-        cat $METHOD_NAME
+    if [ "$1" ]; then
+        cat $1
+    else
+        METHOD_NAME=$(ls -1 \
+            | fzf --color="light" --preview="head {}"
+        )
+        if test -f "$METHOD_NAME"; then
+            cat $METHOD_NAME
+        fi
     fi
+
     cd $MDOT_PWD
 }

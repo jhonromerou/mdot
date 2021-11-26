@@ -37,6 +37,11 @@ function i_mdot_title()
     printf "${C_RED}****${C_NC} $1\n"
 }
 
+function i_mdot_err()
+{
+    printf "🚫🚫🚫 $1\n"
+}
+
 function mdot-core-clear(){
     #unset -f i_mdot_title
     unset -f i_echo

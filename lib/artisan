@@ -20,7 +20,7 @@ function m-artisan-bcrypt()
     fi
 }
 
-# TODO: no está funcionando
+# TODO:
 # Obtener contenido desencriptado utilizando decrypt de laravel
  # m-artisan-bcrypt "password-1234": Encriptar directamente
 function m-artisan-decrypt()

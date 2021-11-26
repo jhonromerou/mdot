@@ -1,25 +1,19 @@
 m-artisan-bcrypt:
-# USOS
-    m-artisan-bcrypt
-    m-artisan-bcrypt "password"
-# DESCRIPCION
-    Obtiene contenido encriptado utilizando bcrypt de laravel
-@rules
-    Require versión especifica de php
+ Obtiene contenido encriptado utilizando bcrypt de laravel.
+ Copia directamente al portapapeles.
+ 
+ Syntax: m-artisan-bcrypt <content_to_encryp>
 
 m-artisan-serve:
-# USOS
-    m-artisan-serve
-# DESCRIPCION
-    Levanta un serve siempre realizando el optimize del .env.
-    Permite pasar argumentos propios del comando
+ Levanta un serve siempre realizando el optimize del .env.
+ Permite pasar argumentos propios del comando
+ 
+ Syntax: m-artisan-serve <args to php artisan serve>
 
 m-artisan-logs:
-# USOS
-    m-artisan-logs
-    m-artisan-logs -f
-# DESCRIPCION
-    Abre el log seleccionado usando less
-    Si se define el flag [-f] se hace un <tail -f> para seguir los cambios
-    Si hay más de 1 archivo de logs, permite seleccionar.
+ Abre el log seleccionado usando less
+ Si se define el flag [-f] se hace un <tail -f> para seguir los cambios.
+ Si hay más de 1 archivo de logs, muestra listado.
+ 
+ Syntax: m-artisan-logs [-f]
 

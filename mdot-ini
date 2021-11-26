@@ -12,6 +12,7 @@ source $MDOT_BIN/.mdot/loader
 
 # Saves directory to return it when command uses cd <path>
 MDOT_PWD=$PWD
+MDOT_TMP="mdot-temp"
 
 # Path of libraries
 MDOT_MODULES=$MDOT_BIN/lib;
@@ -23,33 +24,54 @@ MDOT_HELP_LIST="$MDOT_HELP/.commands/.list";
 
 
 # Start
-if [ "$MDOT_LOADED" = true ]; then
-    i_title "MDOT is loaded"
-    i_echo "If whant reload all use: mdot-reload"
-    
-else
-    # Just one loaded!
-    MDOT_LOADED=true
-
-    # Imports and defines wikis
-    mdot-loader-imports
-    mdot-loader-custom-imports
+# Imports and defines wikis
+mdot-loader-imports
+mdot-loader-custom-imports
+if ! [ -f $MDOT_HELP_LIST ]; then
     mdot-loader-wikis
-
-    # Clear mdot internal libraries
-    mdot-core-clear
-    mdot-loader-clear
 fi
+# Clear mdot internal libraries
+mdot-core-clear
+mdot-loader-clear
+
+function mdot-tmp()
+{
+    mkdir -p $MDOT_TMP
+    mkdir -p "$MDOT_TMP/coverage"
+    mkdir -p "$MDOT_TMP/composer"
+    gitignore="$MDOT_TMP/.gitignore"
+    rm -f 
+    echo "*" > $gitignore
+}
+
+# Deletes mdot temporary
+function mdot-clear()
+{
+    if [ -d "tests-bk" ]; then
+        echo "Se va a reemplazar el directorio tests/ con el contenidoo de tests-bk/"
+        read -e -p "Desea continuar (Y)?: " ok
+        if [ "$ok" = "Y" ]; then
+            rm -r "tests"
+            mv tests-bk tests
+        fi
+    fi
+    rm -rf $MDOT_TMP
+}
 
 # Lists all commands and shows help
 function m-help()
 {
     cd $MDOT_HELP_CMDS
-    METHOD_NAME=$(ls -1 \
-        | fzf --color="light" --preview="head -100 {}"
-    )
-    if test -f "$METHOD_NAME"; then
-        less $METHOD_NAME
+    if [ "$1" ]; then
+        cat $1
+    else
+        METHOD_NAME=$(ls -1 \
+            | fzf --color="light" --preview="head {}"
+        )
+        if test -f "$METHOD_NAME"; then
+            cat $METHOD_NAME
+        fi
     fi
+
     cd $MDOT_PWD
 }

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function m-text-blines()
 {
     line_ini=$1
@@ -9,4 +11,5 @@ function m-text-blines()
 function m-copy()
 {
    echo "$@" | tr -d '\n\r' | xclip -selection clipboard
+   echo "**** Copy on clipboard"
 }

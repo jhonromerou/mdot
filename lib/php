@@ -1,6 +1,7 @@
-# TODO: Buscar format de desacoplar de php artisan
+#!/usr/bin/env bash
 
-function m-php-set()
+
+function m-php()
 {
     if [[ $1 ]]; then
         version="php$1"
@@ -15,44 +16,144 @@ function m-php-set()
     fi
 }
 
-function m-php-unit()
-{
-    php artisan optimize --env=testing
-    ./vendor/bin/phpunit $@
+function m-php-v(){
+    php_v=$(php -v | head -1 | awk '{ print $2 }')
+
+    if [ "$1" != "--all" ]; then
+        php_v=$(echo "$php_v" | awk -F "." '{ print $1"."$2 }')
+    fi
+    echo $php_v
 }
 
-function m-php-coverage()
+function m-php-ext-enable()
 {
-    PATH_REPORT="test-reports/coverage"
-    rm -r $PATH_REPORT 2> /dev/null
-
-    echo "**** Env = testing..."
-    if [[ "$1" = "--html" ]]; then
-        php artisan optimize --env=testing
-        ./vendor/bin/phpunit --coverage-html $PATH_REPORT;
-        echo "**** Report: $PATH_REPORT/index.html"
-
+    version_to_use=$1
+    if [ "$version_to_use" ]; then
+        php_v="$version_to_use"
     else
-        php artisan optimize --env=testing
-        ./vendor/bin/phpunit --coverage-text=$PATH_REPORT/coverage.txt
-        E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
-        echo "**** % de Coverage: $E_LINES"
-        m-substr-line 6 9 $PATH_REPORT/coverage.txt
+        php_v=$(m-php-v)
+    fi
+
+    path="/etc/php/$php_v/mods-available"
+    
+    cd $path
+    ext_sel=$(grep -r $path -e '^[;].*extension' \
+     | awk -F ":" '{ print $1 }' \
+     | fzf --preview='head {}'
+    )
+
+    if [[ $ext_sel ]]; then
+        line_num=$(grep -ne '^[;].*extension' $ext_sel | awk -F ":" '{ print $1 }')
+        sudo sed -i '3s/;//' $ext_sel
+        echo "Extension enabled"
+        echo $ext_sel
+    fi
+
+    cd $MDOT_PWD
+}
+
+function m-php-ext-disable()
+{
+    version_to_use=$1
+    if [ "$version_to_use" ]; then
+        php_v="$version_to_use"
+    else
+        php_v=$(m-php-v)
+    fi
+
+    path="/etc/php/$php_v/mods-available"
+
+    cd $path
+    ext_sel=$(grep -rsv . -e '^;.*extension' \
+        | awk -F ":" '{ print $1 }' \
+        | awk -F "./" '{ print $2 }' \
+        | fzf --preview='head {}'
+    )
+
+    if [[ $ext_sel ]]; then
+        line=$(grep -n ".*extension" $ext_sel)
+        line_num=$(echo "$line" | awk -F ":" '{ print $1 }')
+        line_txt=$(echo "$line" | awk -F ":" '{ print $2 }')
+        sudo sed -i "${line_num}s/${line_txt}/;${line_txt}/" $path/$ext_sel
+        echo "Extension disabled"
+        echo $path/$ext_sel
+    fi
+
+    cd $MDOT_PWD
+}
+
+#
+ #Require composer
+#
+
+function m-php-cs()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        mdot-tmp
+        FILE_PATH="$MDOT_TMP/format-errors.txt"
+        rm -f $FILE_PATH > /dev/null
+
+        i_mdot_title "Cargando php-cs-fixer..."
+        if [ -f ".php_cs" ]; then
+            require_lib="friendsofphp/php-cs-fixer:v2.19.2"
+            cs_vhelp="#version:2.19"
+        else
+            require_lib="friendsofphp/php-cs-fixer"
+            cs_vhelp="#latest"
+        fi
+
+        path_install="$MDOT_TMP/composer"
+        composer require -q --working-dir=$path_install --dev $require_lib
+
+        "$path_install/vendor/bin/php-cs-fixer" fix --using-cache=no --show-progress=yes \
+        --format=checkstyle --dry-run > $FILE_PATH
+
+        i_mdot_title "Reporte generado 📰📰 $FILE_PATH"
+        num_errors=$(grep -c "<error" $FILE_PATH)
+        if [ "$num_errors" -gt 0 ]; then
+            echo "😵😵 Se encontraron $num_errors errores de formato: "
+            echo "  Puede obtener ayuda en el siguiente enlace"
+            echo "  https://mlocati.github.io/php-cs-fixer-configurator/$cs_vhelp"
+        fi
     fi
 }
 
-function m-php-format()
+function m-php-stan()
 {
-    FILE_PATH=~/format-errors.txt
-    rm $FILE_PATH > /dev/null
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        mdot-tmp
+        memory_limit="300M"
+        if [[ "$1" ]]; then
+            memory_limit=$1
+        fi
 
-    m-composer-json-backup
-    echo "**** Load php-cs-fixer..."
-    composer require friendsofphp/php-cs-fixer:v2.19.2 && \
-    vendor/bin/php-cs-fixer fix --using-cache=no --show-progress=yes \
-    --format=checkstyle --dry-run > $FILE_PATH;
+        i_mdot_title "Revisando con php-stand... --memory-limit $memory_limit"
 
-    echo "**** Restore config"
-    m-composer-json-restore   
-    echo "**** Open file report: $FILE_PATH"
+        path_install=""
+        if ! [ -d "vendor/phpstan" ]; then
+            path_install="$MDOT_TMP/composer/"
+            composer require -q --working-dir=$path_install \
+            --dev phpstan/phpstan:0.11
+        fi
+
+        report_errors="$MDOT_TMP/static-errors.txt"
+        report_fatals="$MDOT_TMP/static-fatal.txt"
+        "${path_install}vendor/bin/phpstan" analyse --no-progress --memory-limit=$memory_limit \
+        > $report_errors \
+        2> $report_fatals
+
+        num_errors=$(grep "\[ERROR\] Found" $report_errors | grep -o "[0-9]\{1,\}")
+        # TODO: calcular correctamente fatals, muestra 0
+        num_fatals=$(grep -c "Fatal error" $report_fatals)
+
+        i_mdot_title "Reportes generados:"
+        echo "📰📰 ${report_errors} 👾 ${num_errors}"
+        echo "📰📰 ${report_fatals} 👾 ${num_fatals}"
+    fi
 }

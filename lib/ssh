@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+function m-ssh-keygen()
+{
+    read -e -p "Directorio donde se guardara el ssh-key :~/.ssh/" -i "id_new" key_name
+    echo ""
+
+    if [ $key_name ]; then
+        key_exists=false
+        key_file=~/.ssh/$key_name
+    
+        if [[ -f $key_file ]]; then
+            key_exists=true
+            read -e -p "Eliminar ssh-key $key_name (y/n)?: " -i "n" doDelete
+            echo ""
+        fi
+
+        if [[ "$doDelete" = "y" ]]; then
+            key_exists=false
+            rm $key_file &> /dev/null
+        fi
+
+        if [ "$key_exists" = true ]; then
+            echo "creación cancelada"
+        else
+            if [[ $1 ]]; then
+                ssh-keygen -f $key_file -t rsa -b 4096 $@
+            else
+                ssh-keygen -t rsa -b 4096 -f $key_file -q -N ""
+            fi
+            i_mdot_title "ssh-key generada!"
+            
+            ssh-add $key_file
+            i_mdot_title "register ssh-key rsa!"
+        fi
+    fi
+}

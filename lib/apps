@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+function m-apps()
+{
+	cd $MDOT_APPS
+	app=$(ls -1 | fzf)
+	m-apps-open "./$app"
+	cd $MDOT_PWD
+}
+
+function m-apps-open()
+{
+	$@ </dev/null &>/dev/null &
+}

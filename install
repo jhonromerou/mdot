@@ -7,7 +7,7 @@ MDOT_INI="$MDOT_BIN/mdot-ini"
 source $MDOT_BIN/.mdot/core
 
 # Inicio de configuración
-i_title "Configurando MDOT para su usuario"
+i_mdot_title "Configurando MDOT para su usuario"
 
 # Limpiar configuracion anterior de mdot
 file_source=~/.bashrc
@@ -21,7 +21,7 @@ if [[ $num ]]; then
     lines_del="$num,$(( $num +2 ))d"
     sed -i $lines_del $file_source
 
-    i_title "mdot unistall!"
+    i_mdot_title "mdot unistall!"
 fi
 
 i_read "Desea ejecutar mdot globalmente? :" \
@@ -38,7 +38,7 @@ else
 fi
 echo "$cmd_defined" >> "$file_source"
 
-i_title "Usando mdot:"
+i_mdot_title "Usando mdot:"
 
 if [[ "$isGlobal" == "Y" ]]; then
     i_echo "Ejecutar cualquier funcionalidad usando ${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
@@ -48,8 +48,8 @@ else
 fi
 
 if test -f ".env"; then
-    i_title ".env ya existe, no se modifico"
+    i_mdot_title ".env ya existe, no se modifico"
 else
-    i_title ".env no existe, se genera desde .env-example"
+    i_mdot_title ".env no existe, se genera desde .env-example"
     cp .env-example .env
 fi

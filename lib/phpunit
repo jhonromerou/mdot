@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+function m-phpunit()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        m-artisan-test
+        vendor/bin/phpunit $@
+    fi
+}
+
+function m-phpunit-coverage()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" != false ]; then
+        echo $isRequired
+    else
+        m-artisan-test
+        PATH_REPORT="$MDOT_TMP/coverage"
+        if [[ "$1" = "--html" ]]; then
+            php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-html=$PATH_REPORT
+            i_mdot_title "Reporte de coverage: $PATH_REPORT/index.html"
+            m-apps-open $MDOT_ENV_BROWSER $PATH_REPORT/index.html
+        else
+            vendor/bin/phpunit --coverage-text="$PATH_REPORT/coverage.txt"
+            E_LINES=$(cat $PATH_REPORT/coverage.txt | grep "^[[:space:]]*Lines:" | awk '{ print $2 }')
+            i_mdot_title "% de Coverage: $E_LINES"
+            m-text-blines 6 9 $PATH_REPORT/coverage.txt
+        fi
+    fi
+}
+
+function m-phpunit-custom()
+{
+    mdot-tmp
+    tests_list="$MDOT_TMP/tests.list"
+    if ! [ -f "$tests_list" ]; then
+        touch $tests_list
+    fi
+
+    path_test="tests"
+    path_bk="tests-bk"
+    if [ -f "phpunit.xml" ]; then
+        mv phpunit.xml phpunit-bk.xml
+    fi
+
+    if ! [ -d $path_bk ]; then
+        i_mdot_title "Se mueve directorio tests/ a tests-bk/"
+        i_mdot_title "Liste los tests especificos que quiere ejecutar"
+        echo "en el archivo $tests_list"
+        mv $path_test $path_bk
+        mkdir $path_test
+    fi
+
+    lines=$(grep -c $tests_list | awk '{ print $1 }')
+    if [[ "$lines" != 0 ]]; then
+        i_mdot_title "Obteniendo $lines tests especificos desde $tests_list"
+        while read line; do
+            file=$(basename $line)
+            path=${line/"$file"/""}
+            path=${path/"$path_bk"/"$path_test"}
+            mkdir -p $path
+            cp $line "$path$file"
+        done < $tests_list
+    fi
+}

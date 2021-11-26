@@ -1,24 +1,42 @@
-m-php-set:
-# USOS
-  - m-php-set
-  - m-php-set 8.0
-# DESCRIPCION
-  - Cambia la version de php teniendo en cuenta las versiones instaladas
-.
-m-php-unit:
-# USOS
-  - m-phpunit
-  - m-phpunit tests/unit/dirtotest --stop-on-errors
-# DESCRIPCION
-  Ejecuta los tests definiendo siempre el ambiente testing.
-  Permite pasar los parametros propios de phpunit
-.
+m-php:
+ Cambiar la version de php con base a las versiones instaladas.
+ 
+ Syntax: m-php <8.0|x.x>
+ Examples:
+  m-php 8.0: Cambiar a la versión 8.0 de php.
+  m-php: Selecciona la versión a usar desde listado.
 
-m-php-coverage:
-# USOS
-  - m-php-coverage
-  - m-php-coverage --html
-# DESCRIPTION
-  Evalua el coverage usando el ambiente de testing.
-  Si se pasa el flag [--html] genera el reporte en coverage/index.html
-.
+m-php-ext-enable:
+ Lista las extensiones DEShabilitadas, la seleccionada se habilita.
+ 
+ Syntax: m-php-ext-enable <8.0|x.x>
+
+ Examples:
+  m-php-ext-enable 8.0: Habilita una extensión de php 8.0
+  m-php-ext-enable: Habilita una extesión de php (la que se esté usando)
+
+m-php-ext-disable:
+ Lista las extensiones habilitadas, la seleccionada se DEShabilita.
+ 
+ Syntax: m-php-ext-disable <8.0|x.x>
+
+ Examples:
+  m-php-ext-disable 8.0: DEShabilita una extensión de php 8.0
+  m-php-ext-disable: DEShabilita una extesión de php (la que se esté usando)
+
+m-php-cs:
+ Validar codigo usando php-cs-fixer.
+ Require tener definido .php_cs
+ 
+ Syntax: m-php-cs
+
+m-php-stan:
+ Validar codigo usando phpstan.
+ Si se pasa el parametro (300M|1G) se define el máximo de memoria a usar.
+ 
+ Syntax: m-php-stan [memory_limit]
+
+ Examples:
+  m-php-stan: Realiza el proceso usando 300M de memory-limit
+  m-php-stan 1G:  Realiza el proceso usando 1GB de memory-limit
+

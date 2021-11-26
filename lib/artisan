@@ -1,25 +1,26 @@
+#!/usr/bin/env bash
+
 function m-artisan-bcrypt()
 {
     DEP_ERR=$(php artisan --execute="" 2>&1 | grep 'composer')
     if [[ $DEP_ERR ]]; then
-        echo -e "**** No se puede realizar el comando\n"
+        echo -e "**** Composer is required"
         php artisan --execute=""
     else
         if [[ $1 ]]; then
             TO_ENCRYPT=$1
         else
-            read -e -p "Digite el contenido a encriptar: " TO_ENCRYPT
+            read -e -p "Define contain to encrypt: " TO_ENCRYPT
         fi
     
         ENCRYPT=$(php artisan tinker --execute="echo bcrypt('$TO_ENCRYPT')")
 
         echo $ENCRYPT
         m-copy $ENCRYPT
-        echo "**** Copiado en el portapapeles"
     fi
 }
 
-# TODO: no está funcionando
+# TODO:
 # Obtener contenido desencriptado utilizando decrypt de laravel
  # m-artisan-bcrypt "password-1234": Encriptar directamente
 function m-artisan-decrypt()
@@ -57,4 +58,10 @@ function m-artisan-logs()
 function m-artisan-serve() {
     php artisan optimize
     php artisan serve $@
+}
+
+function m-artisan-test()
+{
+    echo "*** --env=testing"
+    php artisan optimize --env=testing
 }

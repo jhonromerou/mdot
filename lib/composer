@@ -1,6 +1,4 @@
-# ------------
- # Composer
-# ------------
+#!/usr/bin/env bash
 
 # Copia temporal de composer.json para no afectar los proyectos
 function m-composer-json-backup()
@@ -14,4 +12,13 @@ function m-composer-json-restore()
 {
     mv composer-mbk.json composer.json 2> /dev/null
     mv composer-mbk.lock composer.lock 2> /dev/null
+}
+
+function m-composer-required()
+{
+     if ([ -f "composer.json" ] && [ -d "vendor" ]); then
+        echo false
+    else
+        i_mdot_err "Composer is required but not found."
+    fi
 }

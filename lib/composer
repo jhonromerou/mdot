@@ -16,9 +16,22 @@ function m-composer-json-restore()
 
 function m-composer-required()
 {
-     if ([ -f "composer.json" ] && [ -d "vendor" ]); then
-        echo false
-    else
+     if ! ([ -f "composer.json" ] && [ -d "vendor" ]); then
         i_mdot_err "Composer is required but not found."
     fi
+}
+
+function m-composer-package-v()
+{
+    isRequired=$(m-composer-required)
+    if [ "$isRequired" ]; then
+        return
+    fi
+
+    package_name=$1
+    version=$(composer show | grep "$package_name" \
+        | head -1 \
+        | awk '{ print $2 }'
+    )
+    echo $version
 }

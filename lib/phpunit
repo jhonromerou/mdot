@@ -34,7 +34,7 @@ function m-phpunit-coverage()
 
 function m-phpunit-custom()
 {
-    mdot-tmp
+    i_mdot_tmp
     tests_list="$MDOT_TMP/tests.list"
     if ! [ -f "$tests_list" ]; then
         touch $tests_list

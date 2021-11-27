@@ -3,8 +3,8 @@ m-php:
  
  Syntax: m-php <8.0|x.x>
  Examples:
-  m-php 8.0: Cambiar a la versión 8.0 de php.
-  m-php: Selecciona la versión a usar desde listado.
+  * m-php 8.0: Cambiar a la versión 8.0 de php.
+  * m-php: Selecciona la versión a usar desde listado.
 
 m-php-ext-enable:
  Lista las extensiones DEShabilitadas, la seleccionada se habilita.
@@ -12,8 +12,8 @@ m-php-ext-enable:
  Syntax: m-php-ext-enable <8.0|x.x>
 
  Examples:
-  m-php-ext-enable 8.0: Habilita una extensión de php 8.0
-  m-php-ext-enable: Habilita una extesión de php (la que se esté usando)
+  * m-php-ext-enable 8.0: Habilita una extensión de php 8.0
+  * m-php-ext-enable: Habilita una extesión de php (la que se esté usando)
 
 m-php-ext-disable:
  Lista las extensiones habilitadas, la seleccionada se DEShabilita.
@@ -21,12 +21,12 @@ m-php-ext-disable:
  Syntax: m-php-ext-disable <8.0|x.x>
 
  Examples:
-  m-php-ext-disable 8.0: DEShabilita una extensión de php 8.0
-  m-php-ext-disable: DEShabilita una extesión de php (la que se esté usando)
+  * m-php-ext-disable 8.0: DEShabilita una extensión de php 8.0
+  * m-php-ext-disable: DEShabilita una extesión de php (la que se esté usando)
 
 m-php-cs:
- Validar codigo usando php-cs-fixer.
- Require tener definido .php_cs
+ Valida codigo usando php-cs-fixer. Genera reporte en
+ mdot-temp/format-errors.txt
  
  Syntax: m-php-cs
 
@@ -37,6 +37,6 @@ m-php-stan:
  Syntax: m-php-stan [memory_limit]
 
  Examples:
-  m-php-stan: Realiza el proceso usando 300M de memory-limit
-  m-php-stan 1G:  Realiza el proceso usando 1GB de memory-limit
+  * m-php-stan: Realiza el proceso usando 300M de memory-limit
+  * m-php-stan 1G:  Realiza el proceso usando 1GB de memory-limit
 

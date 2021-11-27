@@ -12,10 +12,10 @@ m-phpunit-coverage:
 
 m-phpunit-custom:
  Debe ejecutarse 2 veces, 1 para definir y otra para actualizar.
- Permite ejecutar tests especificos definidos en el ./mdot-tmp/tests.list
-  - Se crea una copia de ./tests/ en ./tests-bk/
+ Permite ejecutar tests especificos definidos en ./mdot-tmp/tests.list
+  - Se crea una copia de ./tests en ./tests-bk
   - Los tests definidos en el archivo mdot-tmp/tests.list,
-  se copian en ./tests/ para ser ejecutados exclusivamente.
+  se copian en ./tests para ser ejecutados exclusivamente.
  
  Syntax: m-phpunit-custom
 

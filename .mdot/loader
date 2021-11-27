@@ -26,7 +26,7 @@ function mdot-loader-cmds()
 
     for module_file in $(find "$MDOT_MODULES" -type f); do 
         # gets each line with methods
-        grep -n 'function ' $module_file | while read -r actual_line; do
+        grep -n 'function m-' $module_file | while read -r actual_line; do
             # gets line num of method: line=1, 24
             line_num_pos=$(echo $actual_line | awk -F ":" '{ print $1 }')
 

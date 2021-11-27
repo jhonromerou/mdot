@@ -16,7 +16,7 @@ function m-php()
     fi
 }
 
-function m-php-v(){
+function _m-php-v(){
     php_v=$(php -v | head -1 | awk '{ print $2 }')
 
     if [ "$1" != "--all" ]; then
@@ -31,7 +31,7 @@ function m-php-ext-enable()
     if [ "$version_to_use" ]; then
         php_v="$version_to_use"
     else
-        php_v=$(m-php-v)
+        php_v=$(_m-php-v)
     fi
 
     path="/etc/php/$php_v/mods-available"
@@ -49,7 +49,7 @@ function m-php-ext-enable()
         echo $ext_sel
     fi
 
-    cd $MDOT_PWD
+    i_mdot_pwd
 }
 
 function m-php-ext-disable()
@@ -58,7 +58,7 @@ function m-php-ext-disable()
     if [ "$version_to_use" ]; then
         php_v="$version_to_use"
     else
-        php_v=$(m-php-v)
+        php_v=$(_m-php-v)
     fi
 
     path="/etc/php/$php_v/mods-available"
@@ -79,7 +79,7 @@ function m-php-ext-disable()
         echo $path/$ext_sel
     fi
 
-    cd $MDOT_PWD
+    i_mdot_pwd
 }
 
 #
@@ -89,35 +89,44 @@ function m-php-ext-disable()
 function m-php-cs()
 {
     isRequired=$(m-composer-required)
-    if [ "$isRequired" != false ]; then
+    if [ $isRequired ]; then
         echo $isRequired
+        return
+    fi
+
+    i_mdot_tmp
+    FILE_PATH="$MDOT_TMP/format-errors.txt"
+    rm -f $FILE_PATH > /dev/null
+
+    # Definir origen de reglas
+    if [ -f ".php_cs" ]; then
+        require_lib="friendsofphp/php-cs-fixer:v2.19.2"
+        cs_vhelp="#version:2.19"
     else
-        mdot-tmp
-        FILE_PATH="$MDOT_TMP/format-errors.txt"
-        rm -f $FILE_PATH > /dev/null
+        require_lib="friendsofphp/php-cs-fixer"
+        cs_vhelp="#latest"
+    fi
 
-        i_mdot_title "Cargando php-cs-fixer..."
-        if [ -f ".php_cs" ]; then
-            require_lib="friendsofphp/php-cs-fixer:v2.19.2"
-            cs_vhelp="#version:2.19"
-        else
-            require_lib="friendsofphp/php-cs-fixer"
-            cs_vhelp="#latest"
-        fi
+    installed_v=$(m-composer-package-v "php-cs-fixer")
+    if [ "$installed_v" ]; then
+        bin_package="vendor/bin/php-cs-fixer"
+    else
+        composer require -q --working-dir="$MDOT_TMP/composer" --dev $require_lib
+        bin_package="$MDOT_TMP/composer/vendor/bin/php-cs-fixer"
+    fi
 
-        path_install="$MDOT_TMP/composer"
-        composer require -q --working-dir=$path_install --dev $require_lib
+    i_mdot_title "Cargando php-cs-fixer... $bin_package"
+    "$bin_package" fix --using-cache=no --show-progress=yes \
+    --format=checkstyle --dry-run > $FILE_PATH
 
-        "$path_install/vendor/bin/php-cs-fixer" fix --using-cache=no --show-progress=yes \
-        --format=checkstyle --dry-run > $FILE_PATH
-
-        i_mdot_title "Reporte generado 📰📰 $FILE_PATH"
-        num_errors=$(grep -c "<error" $FILE_PATH)
-        if [ "$num_errors" -gt 0 ]; then
-            echo "😵😵 Se encontraron $num_errors errores de formato: "
-            echo "  Puede obtener ayuda en el siguiente enlace"
-            echo "  https://mlocati.github.io/php-cs-fixer-configurator/$cs_vhelp"
-        fi
+    num_errors=$(grep -c "<error" $errors_path)
+    if [ "$num_errors" -gt 0 ]; then
+        i_mdot_title "Reporte generado 📰📰 $errors_path"
+        echo "😵😵 Se encontraron $num_errors error/es de formato: "
+        echo "  Puede obtener ayuda en el siguiente enlace"
+        echo "  https://mlocati.github.io/php-cs-fixer-configurator/$cs_help"
+    else
+        i_mdot_success "Sin errores de formato"
     fi
 }
 
@@ -127,7 +136,7 @@ function m-php-stan()
     if [ "$isRequired" != false ]; then
         echo $isRequired
     else
-        mdot-tmp
+        i_mdot_tmp
         memory_limit="300M"
         if [[ "$1" ]]; then
             memory_limit=$1

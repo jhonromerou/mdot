@@ -34,16 +34,6 @@ fi
 mdot-core-clear
 mdot-loader-clear
 
-function mdot-tmp()
-{
-    mkdir -p $MDOT_TMP
-    mkdir -p "$MDOT_TMP/coverage"
-    mkdir -p "$MDOT_TMP/composer"
-    gitignore="$MDOT_TMP/.gitignore"
-    rm -f 
-    echo "*" > $gitignore
-}
-
 # Deletes mdot temporary
 function mdot-clear()
 {
@@ -73,5 +63,5 @@ function m-help()
         fi
     fi
 
-    cd $MDOT_PWD
+    i_mdot_pwd
 }

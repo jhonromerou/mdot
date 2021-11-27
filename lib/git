@@ -2,7 +2,7 @@
 
 # Listar las ramas excepto las remotas
 # Solo muestra las activas
-function m-git-branches()
+function _m-git-branches()
 {
     BRANCHE_USED=$(git branch --show-current)
     branch=$(git branch --all  \
@@ -17,13 +17,8 @@ function m-git-branches()
 # Cambiar de rama desde seleccion o directamente
 function m-git-checkout()
 {
-    if [[ $1 ]]; then
-        branch=$@
-    else
-        branch=$(m-git-branches)
-    fi
-
-    if [[ $branch ]]; then
+    branch=$(_m-git-branches)
+    if [ $branch ]; then
         git checkout $branch
     fi
 }
@@ -49,6 +44,17 @@ function m-git-merge()
     fi
 }
 
+function m-git-changes()
+{
+    echo "$1"
+    if [[ "$1" = "-s" ]]; then
+        hash=$(git log --oneline | fzf --header="Seleccione el commit")
+    else
+        hash=$(git log --oneline | head -1)
+    fi
+    hash=$(echo $hash | awk '{ print $1 }')
+    git diff $hash --stat
+}
 # Ver listado de archivos con cambios con base al commit definido
 function m-git-diff()
 {

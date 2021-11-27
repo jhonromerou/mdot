@@ -1,16 +1,28 @@
 m-git-merge:
  🛑🛑🛑 Usar con cuidado.
  Selecciona una rama a fusionar con la rama actual.
+ 
+ Syntax: m-git-merge <branch-to-merge>
+
  Ejecuta los siguientes comandos:
   git checkout <rama_a_fusionar>
   git fetch -ap
   git checkout - (vuelve a rama actual)
   git merge <rama_a_fusionar>
- 
- Syntax: m-git-merge <branch-to-merge>
 
 m-git-checkout:
- Cambiar a una rama seleccionada desde un listado.
+ Muestra listado de ramas y cambia a la seleccionada.
  
- Syntax: m-git-checkout <branch>
+ Syntax: m-git-checkout
+
+m-git-changes:
+ Muestra listado de archivos que han cambiado.
+ 
+ Syntax: m-git-changes [-s]
+ 
+ Examples:
+  * m-git-changes: Archivos con cambios con base al
+  ultimo commit.
+  * m-git-changes -s: Abre listado de commits para
+  ver archivos cambiados respecto a este.
 

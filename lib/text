@@ -10,6 +10,11 @@ function m-text-blines()
 
 function m-copy()
 {
-   echo "$@" | tr -d '\n\r' | xclip -selection clipboard
-   echo "**** Copy on clipboard"
+    if [ "$1" = "-s" ]; then
+        shift
+    else
+        echo "**** Copy on clipboard"
+    fi
+
+    echo "$@" | tr -d '\n\r' | xclip -selection clipboard
 }

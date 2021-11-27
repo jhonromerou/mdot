@@ -5,7 +5,7 @@ function m-apps()
 	cd $MDOT_APPS
 	app=$(ls -1 | fzf)
 	m-apps-open "./$app"
-	cd $MDOT_PWD
+	i_mdot_pwd
 }
 
 function m-apps-open()

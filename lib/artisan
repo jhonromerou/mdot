@@ -55,6 +55,18 @@ function m-artisan-logs()
     fi
 }
 
+function m-artisan-clear()
+{
+    # Remove the route,view cache file
+    php artisan cache:clear \
+    php artisan view:clear \
+    php artisan route:clear \
+    # Remove the cached bootstrap files
+    php artisan optimize:clear
+    # Recreate boostrap/cache/compiled.php
+    php artisan optimize
+}
+
 function m-artisan-serve() {
     php artisan optimize
     php artisan serve $@

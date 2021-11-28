@@ -45,6 +45,11 @@ function mdot-clear()
             mv tests-bk tests
         fi
     fi
+
+    if [ -f "phpunit-bk.xml" ]; then
+        mv phpunit-bk.xml phpunit.xml
+    fi
+
     rm -rf $MDOT_TMP
 }
 

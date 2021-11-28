@@ -74,6 +74,8 @@ function m-artisan-serve() {
 
 function m-artisan-test()
 {
-    echo "*** --env=testing"
-    php artisan optimize --env=testing
+    if [ -f "artisan" ]; then
+        i_mdot_title "*** --env=testing"
+        php artisan optimize --env=testing
+    fi
 }

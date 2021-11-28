@@ -95,8 +95,8 @@ function m-php-cs()
     fi
 
     i_mdot_tmp
-    FILE_PATH="$MDOT_TMP/format-errors.txt"
-    rm -f $FILE_PATH > /dev/null
+    errors_path="$MDOT_TMP/format-errors.txt"
+    rm -f $errors_path > /dev/null
 
     # Definir origen de reglas
     if [ -f ".php_cs" ]; then
@@ -117,7 +117,7 @@ function m-php-cs()
 
     i_mdot_title "Cargando php-cs-fixer... $bin_package"
     "$bin_package" fix --using-cache=no --show-progress=yes \
-    --format=checkstyle --dry-run > $FILE_PATH
+    --format=checkstyle --dry-run > $errors_path
 
     num_errors=$(grep -c "<error" $errors_path)
     if [ "$num_errors" -gt 0 ]; then

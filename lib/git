@@ -30,13 +30,13 @@ function m-git-merge()
     if [[ $1 ]]; then
         branch=$1
     else
-        branch=$(m-git-branches)
+        branch=$(_m-git-branches)
     fi
 
     if [[ $branch ]]; then
         i_mdot_title "Sincronizando rama: $branch"
         git checkout $branch
-        git fetch -ap
+        git pull
 
         i_mdot_title "Fusionando en rama: $BRANCHE_USED"
         git checkout $BRANCHE_USED
@@ -46,7 +46,6 @@ function m-git-merge()
 
 function m-git-changes()
 {
-    echo "$1"
     if [[ "$1" = "-s" ]]; then
         hash=$(git log --oneline | fzf --header="Seleccione el commit")
     else
@@ -54,21 +53,6 @@ function m-git-changes()
     fi
     hash=$(echo $hash | awk '{ print $1 }')
     git diff $hash --stat
-}
-# Ver listado de archivos con cambios con base al commit definido
-function m-git-diff()
-{
-    branch=$(git status | head -1 | awk '{ print $NF }')
-    param=$(m-arg-param $1)
-
-    if [[ $param ]]; then
-        hash=$1
-    else
-        hash=$(git log --oneline $branch \
-        | fzf --header="Seleccione el commit de origen: " \
-        | awk '{ print $1 }')
-    fi
-    git diff $hash^.. --stat
 }
 
 function m-git-config()

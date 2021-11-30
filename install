@@ -41,10 +41,10 @@ echo "$cmd_defined" >> "$file_source"
 i_mdot_title "Usando mdot:"
 
 if [[ "$isGlobal" == "Y" ]]; then
-    i_echo "Ejecutar cualquier funcionalidad usando ${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
+    i_echo "Ejecutar cualquier funcionalidad usando ${C_RED}m-xxx${C_NC}. Ej: ${C_RED}mdot-help${C_NC}"
 else
     i_echo "1. Ejecutar ${C_RED}mdot${C_NC} en la consola para habilitar temporalmente."
-    i_echo "2. Ejecutar cualquier comando usando {${C_RED}m-xxx${C_NC}. Ej: ${C_RED}m-help${C_NC}"
+    i_echo "2. Ejecutar cualquier comando usando {${C_RED}m-xxx${C_NC}. Ej: ${C_RED}mdot-help${C_NC}"
 fi
 
 if test -f ".env"; then

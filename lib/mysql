@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+function m-mysql-backup()
+{
+    i_mdot_title "Datos de conexión"
+    db_host='127.0.0.1:3306'
+    read -e -p "Host: " -i "$db_host" db_host
+
+    db_port=$(echo $db_host | awk -F":" '{ print $2 }')
+    db_host=$(echo $db_host | awk -F":" '{ print $1 }')
+    if ! [ "$db_port" ]; then
+        db_port=3306
+    fi
+
+    read -e -p "Usuario: " -i "root" db_user
+    read -e -p "Contraseña: ****" -s db_pwd
+
+    echo ""
+    db_name=$(_m-mysql-db-selected "$db_host" $db_port "$db_user" "$db_pwd")
+    err=$(i_mdot_has_error "$db_name")
+    if [ "$err" ]; then
+        echo $err
+        i_mdot_abort
+        return
+    fi
+    echo "Base de datos: $db_name"
+
+    path_default="backup-db-$db_name.sql"
+    read -e -p "🗃️  Guardar backup en: ~/" -i "$path_default" path_backup
+    if ! [ "$path_backup" ]; then
+        i_mdot_abort
+        return
+    fi
+
+    path_backup=~/${path_backup}
+    i_mdot_rm "$path_backup"
+    # Backup using mysqldump
+    mysqldump "$db_name" --host="$db_host" --port="$db_port" --user="$db_user" --password="$db_pwd" \
+        --no-tablespaces --column-statistics=0 \
+        --skip-lock-tables --single-transaction \
+        --add-drop-table --add-drop-database --add-drop-trigger \
+        > $path_backup
+
+    if ! [ -f "$path_backup" ]; then
+        i_mdot_abort
+        return
+    fi
+
+    if [ "$1" = "--zip" ]; then
+        gzip -c "$path_backup" > "${path_backup}.gz"
+        i_mdot_rm "$path_backup"
+        path_backup="${path_backup}.gz"
+    fi
+
+    i_mdot_output "Backup generado: $path_backup"
+}
+
+function m-mysql-restore()
+{
+    i_mdot_title "Datos de conexión"
+    db_host='127.0.0.1:3306'
+    read -e -p "Host: " -i "$db_host" db_host
+
+    db_port=$(echo $db_host | awk -F":" '{ print $2 }')
+    db_host=$(echo $db_host | awk -F":" '{ print $1 }')
+    if ! [ "$db_port" ]; then
+        db_port=3306
+    fi
+
+    read -e -p "Usuario: " -i "root" db_user
+    read -e -p "Contraseña: ****" -s db_pwd
+    echo ""
+    read -e -p "Base de datos: " db_name
+
+    path_default=~/backup-db-$db_name.sql
+    if [ "$1" = "--zip" ]; then
+        path_default="$path_default.gz"
+    fi
+
+    read -e -p "🗃️  Ubicación del archivo de respaldo: " -i "$path_default" path_backup
+    if ! [ "$path_backup" ]; then
+        i_mdot_abort
+        return
+    fi
+
+    if [ "$1" = "--zip" ]; then
+        gzip -d < "$path_backup" \
+        | mysql "$db_name" --host="$db_host" --port="$db_port" --user="$db_user" --password="$db_pwd"
+    else
+        mysql "$db_name" --host="$db_host" --port="$db_port" --user="$db_user" --password="$db_pwd" \
+        < $path_backup
+    fi
+
+    i_mdot_output "Backup restaurado en $db_name"
+}
+
+function _m-mysql-db-selected()
+{
+    db_selected=$(mysql --host="$1" --port=$2 --user="$3" --password="$4" -sN -e 'show databases' \
+        2>&1 | grep -v "Warning"
+    )
+
+    error=$(echo "$db_selected" | grep "ERROR")
+    if [ "$error" ]; then
+        echo true
+        echo $error
+        return
+    fi
+    echo $(echo "$db_selected" | fzf --header="Selecciona una base de datos")
+}

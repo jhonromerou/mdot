@@ -1,0 +1,16 @@
+m-mysql-backup:
+ Genera un backup de una base de datos en sencillos pasos.
+ 
+ Syntax: m-mysql-backup [ --zip ]
+ 
+ Flags:
+  * --zip: Genera el backup en un archivo comprimido.
+
+m-mysql-restore:
+ Restaura un backup de una base de datos en sencillos pasos.
+ 
+ Syntax: m-mysql-backup [ --zip ]
+ 
+ Flags:
+  * --zip: Genera el backup desde un archivo comprimido.
+

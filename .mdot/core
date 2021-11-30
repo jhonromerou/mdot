@@ -49,13 +49,41 @@ function i_mdot_success()
 
 function i_mdot_info()
 {
-    printf " ℹ️ ℹ️ $1\n"
+    printf "ℹ️ ℹ️ $1\n"
+}
+function i_mdot_output()
+{
+    printf "⏩⏩ $1\n"
+}
+
+function i_mdot_abort()
+{
+    printf "⏹️  ⏹️  Se detuvo la ejecución\n"
 }
 
 # Return to initial directory
 function i_mdot_pwd()
 {
     cd $MDOT_PWD
+}
+
+# Elimina sileciosamente
+function i_mdot_rm()
+{
+    rm -f "$1" > /dev/null
+}
+
+# Sirve para validar si hay errores
+ # linea 1: se pasa true
+ # linea 2: Contenido del error
+ # Si cumple devuelve 
+function i_mdot_has_error()
+{
+    lines=$(echo "$1" | wc -l)
+    line_1=$(echo "$1" | head -1)
+    if [ "$line_1" = true ] && [ "$lines" = 2 ]; then
+        echo "$1" | tail +2
+    fi
 }
 
 function mdot-core-clear(){

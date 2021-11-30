@@ -54,7 +54,7 @@ function mdot-clear()
 }
 
 # Lists all commands and shows help
-function m-help()
+function mdot-help()
 {
     cd $MDOT_HELP_CMDS
     if [ "$1" ]; then

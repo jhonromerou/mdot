@@ -5,3 +5,5 @@ custom/*
 
 # Log files
 *.log
+# All files that contains .example can follow.
+!*.example

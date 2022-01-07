@@ -16,15 +16,6 @@ function m-php()
     fi
 }
 
-function _m-php-v(){
-    php_v=$(php -v | head -1 | awk '{ print $2 }')
-
-    if [ "$1" != "--all" ]; then
-        php_v=$(echo "$php_v" | awk -F "." '{ print $1"."$2 }')
-    fi
-    echo $php_v
-}
-
 function m-php-ext-enable()
 {
     version_to_use=$1
@@ -121,8 +112,8 @@ function m-php-cs()
 
     num_errors=$(grep -c "<error" $errors_path)
     if [ "$num_errors" -gt 0 ]; then
-        i_mdot_title "Reporte generado 📰📰 $errors_path"
-        echo "😵😵 Se encontraron $num_errors error/es de formato: "
+        echo "😵😵 Se encontraron $num_errors errores de formato:"
+        i_mdot_output "Reporte: $errors_path"
         echo "  Puede obtener ayuda en el siguiente enlace"
         echo "  https://mlocati.github.io/php-cs-fixer-configurator/$cs_help"
     else
@@ -162,7 +153,18 @@ function m-php-stan()
         num_fatals=$(grep -c "Fatal error" $report_fatals)
 
         i_mdot_title "Reportes generados:"
-        echo "📰📰 ${report_errors} 👾 ${num_errors}"
-        echo "📰📰 ${report_fatals} 👾 ${num_fatals}"
+        echo "📰 ${report_errors} 👾 ${num_errors}"
+        echo "📰 ${report_fatals} 👾 ${num_fatals}"
     fi
+}
+
+# private
+
+function _m-php-v(){
+    php_v=$(php -v | head -1 | awk '{ print $2 }')
+
+    if [ "$1" != "--all" ]; then
+        php_v=$(echo "$php_v" | awk -F "." '{ print $1"."$2 }')
+    fi
+    echo $php_v
 }

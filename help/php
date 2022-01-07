@@ -19,7 +19,6 @@ m-php-ext-disable:
  Lista las extensiones habilitadas, la seleccionada se DEShabilita.
  
  Syntax: m-php-ext-disable <8.0|x.x>
-
  Examples:
   * m-php-ext-disable 8.0: DEShabilita una extensión de php 8.0
   * m-php-ext-disable: DEShabilita una extesión de php (la que se esté usando)
@@ -35,7 +34,6 @@ m-php-stan:
  Si se pasa el parametro (300M|1G) se define el máximo de memoria a usar.
  
  Syntax: m-php-stan [memory_limit]
-
  Examples:
   * m-php-stan: Realiza el proceso usando 300M de memory-limit
   * m-php-stan 1G:  Realiza el proceso usando 1GB de memory-limit

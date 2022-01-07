@@ -3,3 +3,5 @@ m-ssh-keygen:
  
  Syntax: m-ssh-keygen <args to ssh-keygen>
 
+m-ssh-connect:
+ Realiza conexión a un host definido en el archivo custom/host_ssh.yml.

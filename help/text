@@ -1,0 +1,17 @@
+m-copy:
+ Copia contenido al portapapeles
+ 
+ Syntax: m-copy <contain>
+ 
+ Flags:
+  * -s: modo silencioso, no muestra mensaje de copia en.
+
+m-copy-filecontain:
+ Copia contenido de un archivo al portapapeles.
+ 
+ Syntax: m-copy-filecontain <path_file>
+
+m-text-blines:
+ Muestra el contenido de un archivo según las lineas definidas.
+ 
+ Syntax: m-text-blines <line_initial> <line_final> <path_file>

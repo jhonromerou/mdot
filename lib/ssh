@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+MDOT_SSH_HOST_LIST=$MDOT_BIN/custom/host_ssh.yml
 function m-ssh-keygen()
 {
     read -e -p "Directorio donde se guardara el ssh-key :~/.ssh/" -i "id_new" key_name
@@ -34,4 +35,32 @@ function m-ssh-keygen()
             i_mdot_title "register ssh-key rsa!"
         fi
     fi
+}
+
+function m-ssh-connect()
+{
+    options=$(grep -n "^name: " $MDOT_SSH_HOST_LIST | awk -F":" '{ print $3"        :"$1 }' | fzf --reverse --header="Seleccione para conectarse")
+    line=$(echo "$options" | awk -F":" '{ print $2 }')
+
+    host=$(_m-ssh-yaml-field "host" $line)
+    keyfile=$(_m-ssh-yaml-field "key" $line)
+    user=$(_m-ssh-yaml-field "user" $line)
+
+    i_mdot_title "Conectando con usuario $user a $host"
+    ssh -i $keyfile $user"@"$host \
+    && i_mdot_output "Desconectado de $host"
+}
+
+# Extrae campo de un yaml respectivo a una linea
+function _m-ssh-yaml-field()
+{
+
+    field_name_required=$1
+    begin_line_number=$2
+    num_fields_in_host=3
+    end_line_number=$(( begin_line_number + num_fields_in_host ))
+
+    field_line=$(echo "$(m-text-blines $begin_line_number $end_line_number $MDOT_SSH_HOST_LIST)" | grep "$field_name_required:")
+    field_value=$(echo "$field_line" | awk -F": " '{ print $2 }')
+    echo $field_value
 }

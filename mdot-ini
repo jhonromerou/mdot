@@ -37,19 +37,9 @@ mdot-loader-clear
 # Deletes mdot temporary
 function mdot-clear()
 {
-    if [ -d "tests-bk" ]; then
-        echo "Se va a reemplazar el directorio tests/ con el contenidoo de tests-bk/"
-        read -e -p "Desea continuar (Y)?: " ok
-        if [ "$ok" = "Y" ]; then
-            rm -r "tests"
-            mv tests-bk tests
-        fi
+    if [ $(declare -Ff m-phpunit-clear) ]; then
+        m-phpunit-clear
     fi
-
-    if [ -f "phpunit-bk.xml" ]; then
-        mv phpunit-bk.xml phpunit.xml
-    fi
-
     rm -rf $MDOT_TMP
 }
 

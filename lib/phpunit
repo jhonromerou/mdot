@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+MDOT_PHPUNIT_TESTS_LIST="$MDOT_TMP/phpunit_tests.txt"
+
 function m-phpunit()
 {
     isRequired=$(m-composer-required)
@@ -18,13 +20,19 @@ function m-phpunit()
 
 function m-phpunit-coverage()
 {
+    i_mdot_tmp
+    m-artisan-test
     PATH_REPORT="$MDOT_TMP/coverage"
+
+    _m-phpunit-get-plugin-name
+    plugin_script=$(_m-phpunit-get-plugin)
+
     if [[ "$1" = "--html" ]]; then
-        php -dxdebug.mode=coverage m-phpunit --coverage-html=$PATH_REPORT
-        i_mdot_title "Reporte de coverage 📰📰 $PATH_REPORT/index.html"
+        php $plugin_script vendor/bin/phpunit --coverage-html=$PATH_REPORT
+        i_mdot_title "Reporte de coverage 📰 $PATH_REPORT/index.html"
         m-apps-open $MDOT_ENV_BROWSER $PATH_REPORT/index.html
     else
-        m-phpunit --coverage-text="$PATH_REPORT/coverage.txt"
+        php $plugin_script vendor/bin/phpunit --coverage-text="$PATH_REPORT/coverage.txt"
         E_LINES=$(grep "^[[:space:]]*Lines:" "$PATH_REPORT/coverage.txt" | awk '{ print $2 }')
         echo "**** Coverage: $E_LINES"
         m-text-blines 6 9 "$PATH_REPORT/coverage.txt"
@@ -34,46 +42,112 @@ function m-phpunit-coverage()
 function m-phpunit-custom()
 {
     i_mdot_tmp
-
-    tests_list="$MDOT_TMP/tests.list"
-    if ! [ -f "$tests_list" ]; then
+    tests_list=$MDOT_PHPUNIT_TESTS_LIST
+    if [ "$(_m-phpunit-custom-is-disabled)" = "true" ]; then
+        i_mdot_title "Se crea el archivo 📰 $tests_list"
         touch $tests_list
-    fi
-
-    path_test="tests"
-    path_bk="tests-bk"
-
-    if ! [ -d $path_bk ]; then
         if [ -f "phpunit.xml" ]; then
-             i_mdot_title "Se mueve phpunit.xml a phpunit-bk.xml"
+            i_mdot_title "Se mueve archivo ./phpunit.xml a ./phpunit-bk.xml"
             mv phpunit.xml phpunit-bk.xml
+            _m-phpunit-xml
         fi
-        i_mdot_title "Se mueve tests/ a tests-bk/"
-        i_mdot_title "Defina los tests especificos que quiere ejecutar"
-        echo "en el archivo 📰📰 $tests_list"
-        echo "y ejecute nuevamente m-phpunit-custom"
 
-        mv $path_test $path_bk
-        mkdir $path_test
+        i_mdot_title "Configure los tests especificos:"
+        echo " 1. Abra el archivo 📰 $tests_list"
+        echo " 2. Digite el path de cada tests en el archivo."
+        echo " 3. Configure archivo ./phpunit.xml"
+
+        echo "❗❗ Si el tests requiere archivos que están dentro de"
+        echo "la carpeta tests/ incluyalos."
 
         return
     fi
 
-    if [ -f $tests_list ]; then
-        i_mdot_title "Leyendo archivo $tests_list"
-        lines=$(grep -c "^" $tests_list | awk '{ print $1 }')
-        if [[ "$lines" == 0 ]]; then
-            echo "Sin nada por copiar."
-            return
-        fi
-
-        i_mdot_title "Copiando $lines archivos..."
-        while read line; do
-            file=$(basename $line)
-            path=${line/"$file"/""}
-            path=${path/"$path_bk"/"$path_test"}
-            mkdir -p $path
-            cp $line "$path$file"
-        done < $tests_list
+    i_mdot_title "Leyendo archivo $tests_list"
+    lines=$(grep -c "^" $tests_list | awk '{ print $1 }')
+    if [[ "$lines" == 0 ]]; then
+        echo "No hay definido tests especificos."
+        return
     fi
+
+    path_test="tests"
+    path_bk="tests-bk"
+    mv $path_test $path_bk
+    i_mdot_title "Copiando $lines archivos..."
+    while read test_filepath; do
+        # tests/{path}/{file_name}
+        file_name=$(basename $test_filepath)
+        path=${test_filepath/"$file_name"/""}
+        mkdir -p $path
+        path_ch=${path/"tests"/"tests-bk"}${file_name}
+        cp $path_ch $test_filepath
+    done < $tests_list
+
+    if [ "$1" = "--clear" ]; then
+        i_mdot_title "Restaurando..."
+        rm -rf $path_test
+        mv $path_bk $path_test
+    fi
+}
+
+# private
+
+function _m-phpunit-custom-is-disabled()
+{
+    if ! [ -f $MDOT_PHPUNIT_TESTS_LIST ]; then
+        echo "true"
+    fi
+}
+
+function _m-phpunit-xml()
+{
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > "phpunit.xml"
+    echo -e " <phpunit>" >> "phpunit.xml"
+    echo -e "  <testsuites>" >> "phpunit.xml"
+    echo -e '   <testsuite name="Custom">' >> "phpunit.xml"
+    # Ejecuta todo lo que cumpla tests/*<nombre-archivo>Test.php
+    echo -e '    <directory suffix="Test.php">tests</directory>' >> "phpunit.xml"
+    echo -e "   </testsuite>" >> "phpunit.xml"
+    echo -e "  </testsuites>" >> "phpunit.xml"
+
+    echo -e " <filter>" >> "phpunit.xml"
+    echo -e '  <whitelist processUncoveredFilesFromWhitelist="true">' >> "phpunit.xml"
+    # Se debe añadir el path que aplique
+    echo -e '   <directory suffix=".php">./</directory>' >> "phpunit.xml"
+    echo -e "  </whitelist>" >> "phpunit.xml"
+    echo -e " </filter>" >> "phpunit.xml"
+
+    echo -e "</phpunit>" >> "phpunit.xml"
+}
+
+function _m-phpunit-clear()
+{
+    i_mdot_title "clear: m-phpunit"
+    rm -f $MDOT_PHPUNIT_TESTS_LIST
+    if [ -f "phpunit-bk.xml" ]; then
+        i_mdot_title "Se restauro phpunit.xml"
+        mv phpunit-bk.xml phpunit.xml
+    fi
+}
+
+function _m-phpunit-get-plugin-name()
+{
+    version_phpunit=$(composer info | grep 'phpunit/phpunit' | awk '{print $2}')    
+    if [[ "${version_phpunit:0:1}" -ge "8" ]]; then
+        plugin="pcov"
+    else
+        plugin="xdebug"
+    fi
+    i_mdot_title "Using plugin: $plugin"
+}
+
+function _m-phpunit-get-plugin()
+{
+    version_phpunit=$(composer info | grep 'phpunit/phpunit' | awk '{print $2}')    
+    if [[ "${version_phpunit:0:1}" -ge "8" ]]; then
+        plugin="-dpcov.enabled=1 -dpcov.directory=\"$PWD\" -dpcov.exclude=\"~vendor~\""
+    else
+        plugin="-dxdebug.mode=coverage"
+    fi
+    echo $plugin
 }

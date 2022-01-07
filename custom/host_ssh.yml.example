@@ -1,0 +1,11 @@
+
+name: Server of Admin Google
+    host: admin.google.com
+    key: ~/.ssh/id_rsa_google
+    user: root
+
+name: Server of Admin Facebook
+    host: admin.facebook.com
+    key: ~/.ssh/id_rsa_facebook
+    user: ubuntu
+

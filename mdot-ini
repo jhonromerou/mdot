@@ -47,13 +47,13 @@ function mdot-clear()
 function mdot-help()
 {
     cd $MDOT_HELP_CMDS
-    if [ "$1" ]; then
+    if [ -f "$1" ]; then
         cat $1
     else
         METHOD_NAME=$(ls -1 \
             | fzf --color="light" --preview="head {}"
         )
-        if test -f "$METHOD_NAME"; then
+        if [ -f "$METHOD_NAME" ]; then
             cat $METHOD_NAME
         fi
     fi

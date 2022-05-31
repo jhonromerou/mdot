@@ -23,16 +23,15 @@ function m-phpunit-coverage()
     i_mdot_tmp
     m-artisan-test
     PATH_REPORT="$MDOT_TMP/coverage"
-
     _m-phpunit-get-plugin-name
     plugin_script=$(_m-phpunit-get-plugin)
 
     if [[ "$1" = "--html" ]]; then
-        php $plugin_script vendor/bin/phpunit --coverage-html=$PATH_REPORT
+        php $plugin_script vendor/bin/phpunit tests --coverage-html=$PATH_REPORT
         i_mdot_title "Reporte de coverage 📰 $PATH_REPORT/index.html"
         m-apps-open $MDOT_ENV_BROWSER $PATH_REPORT/index.html
     else
-        php $plugin_script vendor/bin/phpunit --coverage-text="$PATH_REPORT/coverage.txt"
+        php $plugin_script vendor/bin/phpunit tests --coverage-text="$PATH_REPORT/coverage.txt"
         E_LINES=$(grep "^[[:space:]]*Lines:" "$PATH_REPORT/coverage.txt" | awk '{ print $2 }')
         echo "**** Coverage: $E_LINES"
         m-text-blines 6 9 "$PATH_REPORT/coverage.txt"
